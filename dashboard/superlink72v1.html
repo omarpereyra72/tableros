@@ -1,0 +1,3038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1a2e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>SUPERLINK72</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ============================================================
+   SUPERLINK72 — CSS VARIABLES & BASE
+   ============================================================ */
+:root {
+  /* DARK MODE (default) */
+  --bg:          #0a0f0a;
+  --bg2:         #0e160e;
+  --bg3:         #141f14;
+  --card:        #111911;
+  --border:      #1e3a1e;
+  --border2:     #2a5a2a;
+  --text:        #c8e8c8;
+  --text2:       #8ab88a;
+  --text3:       #5a7a5a;
+  --accent1:     #00ff88;
+  --accent2:     #39ff14;
+  --accent3:     #7fff7f;
+  --accent4:     #00cc66;
+  --warn:        #ffcc00;
+  --danger:      #ff4444;
+  --link:        #44ffaa;
+  --link-hover:  #00ff88;
+  --tag-bg:      #0a2a0a;
+  --tag-border:  #1a5a1a;
+  --shadow:      0 0 12px rgba(0,255,136,0.15);
+  --glow:        0 0 20px rgba(0,255,136,0.3);
+  --scanline:    rgba(0,0,0,0.04);
+  --font-mono:   'Share Tech Mono', 'Courier New', monospace;
+  --font-display:'VT323', monospace;
+}
+
+/* LIGHT MODE — PALETTES */
+body.light {
+  --scanline: rgba(0,0,0,0.018);
+}
+
+/* AZUL (default light) */
+body.light,
+body.light[data-palette="blue"] {
+  --bg:          #eef3fb;
+  --bg2:         #dde8f6;
+  --bg3:         #ccdaf0;
+  --card:        #e6eef8;
+  --border:      #7aaad8;
+  --border2:     #2d72c4;
+  --text:        #0d2244;
+  --text2:       #1a4080;
+  --text3:       #4a6a9a;
+  --accent1:     #1a5fc8;
+  --accent2:     #0d46a0;
+  --accent3:     #2a7ae2;
+  --accent4:     #1055b0;
+  --warn:        #c07000;
+  --danger:      #cc2020;
+  --link:        #1248a8;
+  --link-hover:  #0a30780;
+  --tag-bg:      #c0d8f4;
+  --tag-border:  #4a90d4;
+  --shadow:      0 2px 10px rgba(20,80,180,0.22);
+  --glow:        0 0 14px rgba(26,95,200,0.28);
+}
+
+body.light[data-palette="red"] {
+  --bg:          #fbeef0;
+  --bg2:         #f5dde0;
+  --bg3:         #ecccd0;
+  --card:        #f8e6e8;
+  --border:      #d87a88;
+  --border2:     #c42d40;
+  --text:        #440d14;
+  --text2:       #801a26;
+  --text3:       #9a4a56;
+  --accent1:     #c81a2c;
+  --accent2:     #a00d1e;
+  --accent3:     #e22a3e;
+  --accent4:     #b01030;
+  --warn:        #c07000;
+  --danger:      #8b0000;
+  --link:        #a81228;
+  --link-hover:  #780a1e;
+  --tag-bg:      #f4c0c8;
+  --tag-border:  #d44a60;
+  --shadow:      0 2px 10px rgba(180,20,40,0.22);
+  --glow:        0 0 14px rgba(200,26,44,0.28);
+}
+
+body.light[data-palette="green"] {
+  --bg:          #eef8f1;
+  --bg2:         #d8f0de;
+  --bg3:         #c2e6ca;
+  --card:        #e4f4e9;
+  --border:      #70c088;
+  --border2:     #228844;
+  --text:        #0c3018;
+  --text2:       #185c30;
+  --text3:       #3c7c52;
+  --accent1:     #1a9440;
+  --accent2:     #0c7030;
+  --accent3:     #26b052;
+  --accent4:     #148038;
+  --warn:        #c07000;
+  --danger:      #cc2020;
+  --link:        #126830;
+  --link-hover:  #0a4820;
+  --tag-bg:      #b8e8c8;
+  --tag-border:  #3c9860;
+  --shadow:      0 2px 10px rgba(20,140,60,0.22);
+  --glow:        0 0 14px rgba(26,148,64,0.28);
+}
+
+body.light[data-palette="yellow"] {
+  --bg:          #fdf8e8;
+  --bg2:         #f8f0cc;
+  --bg3:         #f0e4b0;
+  --card:        #faf4d8;
+  --border:      #d8b840;
+  --border2:     #a88010;
+  --text:        #3a2c00;
+  --text2:       #6a4c00;
+  --text3:       #8a6c20;
+  --accent1:     #c89000;
+  --accent2:     #a87000;
+  --accent3:     #e0a800;
+  --accent4:     #b08000;
+  --warn:        #c07000;
+  --danger:      #cc2020;
+  --link:        #9a7000;
+  --link-hover:  #705000;
+  --tag-bg:      #f0d880;
+  --tag-border:  #c0a020;
+  --shadow:      0 2px 10px rgba(180,140,0,0.22);
+  --glow:        0 0 14px rgba(200,144,0,0.28);
+}
+
+body.light[data-palette="violet"] {
+  --bg:          #f3eefb;
+  --bg2:         #e6ddf6;
+  --bg3:         #d8ccee;
+  --card:        #ede6f8;
+  --border:      #9a78d8;
+  --border2:     #6428c4;
+  --text:        #200d44;
+  --text2:       #3c1a80;
+  --text3:       #664a9a;
+  --accent1:     #6c1ac8;
+  --accent2:     #520da0;
+  --accent3:     #822ae2;
+  --accent4:     #5e10b0;
+  --warn:        #c07000;
+  --danger:      #cc2020;
+  --link:        #5412a8;
+  --link-hover:  #3c0a78;
+  --tag-bg:      #d8c0f4;
+  --tag-border:  #8450d4;
+  --shadow:      0 2px 10px rgba(100,40,180,0.22);
+  --glow:        0 0 14px rgba(108,26,200,0.28);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* CRT scanlines overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    var(--scanline) 0px,
+    var(--scanline) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent1); }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+#app { max-width: 900px; margin: 0 auto; padding: 0 12px 80px; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: var(--bg2);
+  border-bottom: 3px solid var(--accent1);
+  padding: 10px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.logo-block {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 34px;
+  color: var(--accent1);
+  text-shadow: 0 0 12px var(--accent1), 0 0 24px var(--accent4);
+  letter-spacing: 3px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+body.light .logo {
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.12), 0 0 8px rgba(0,0,0,0.15);
+}
+
+.logo span {
+  color: var(--warn);
+  text-shadow: 0 0 10px var(--warn);
+}
+
+body.light .logo span {
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.12);
+}
+
+.header-meta {
+  font-size: 11px;
+  color: var(--text3);
+  text-align: right;
+}
+
+.header-meta .count {
+  color: var(--accent1);
+  font-size: 13px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  border-color: var(--accent1);
+  color: var(--accent1);
+  box-shadow: 0 0 8px rgba(0,255,136,0.2);
+}
+
+.btn-primary {
+  border-color: var(--accent1);
+  color: var(--accent1);
+  background: var(--tag-bg);
+}
+
+.btn-primary:hover {
+  background: var(--accent1);
+  color: var(--bg);
+  box-shadow: var(--glow);
+}
+
+.btn-warn {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.btn-warn:hover {
+  background: var(--warn);
+  color: var(--bg);
+}
+
+.btn-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-sm {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.btn-icon {
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+/* ============================================================
+   TABS / NAV
+   ============================================================ */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin: 16px 0 0;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: transparent;
+  white-space: nowrap;
+  transition: all 0.15s;
+  position: relative;
+  bottom: -1px;
+}
+
+.tab:hover { color: var(--text); border-color: var(--border); background: var(--bg3); }
+
+.tab.active {
+  color: var(--accent1);
+  border-color: var(--border2);
+  border-bottom-color: var(--bg);
+  background: var(--bg);
+}
+
+.tab-content { display: none; padding: 16px 0; }
+.tab-content.active { display: block; }
+
+/* ============================================================
+   SECTION TITLES
+   ============================================================ */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--accent1);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+.section-title::before {
+  content: '> ';
+  color: var(--warn);
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-group { margin-bottom: 12px; }
+
+label {
+  display: block;
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+label::before { content: '# '; color: var(--accent4); }
+
+input[type="text"],
+input[type="url"],
+textarea,
+select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent1);
+  box-shadow: 0 0 6px rgba(0,255,136,0.2);
+}
+
+textarea { resize: vertical; min-height: 60px; }
+
+select option { background: var(--bg3); color: var(--text); }
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .input-row { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   EMOJI PICKER
+   ============================================================ */
+.emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+
+.emoji-btn {
+  font-size: 20px;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.1s;
+  line-height: 1;
+}
+
+.emoji-btn:hover { border-color: var(--accent1); background: var(--tag-bg); transform: scale(1.2); }
+.emoji-btn.selected { border-color: var(--accent1); background: var(--tag-bg); box-shadow: 0 0 6px var(--accent1); }
+
+.selected-emoji-display {
+  font-size: 24px;
+  padding: 4px 8px;
+  background: var(--tag-bg);
+  border: 1px solid var(--border2);
+  min-width: 44px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* ============================================================
+   SUBLINKS
+   ============================================================ */
+.sublink-item {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.sublink-item input { flex: 1; }
+
+.sublink-list { margin-top: 8px; }
+
+/* ============================================================
+   TAGS / CATEGORY CHIPS
+   ============================================================ */
+.tag {
+  display: inline-block;
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
+  color: var(--accent2);
+  font-size: 11px;
+  padding: 2px 9px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: bold;
+}
+
+.tag:hover, .tag.active {
+  background: var(--accent1);
+  color: #f2eedf;
+  border-color: var(--accent2);
+  box-shadow: 0 0 6px rgba(42,110,8,0.3);
+}
+
+/* ============================================================
+   LINK CARDS
+   ============================================================ */
+.links-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.link-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border2);
+  padding: 12px 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.link-card:hover {
+  border-color: var(--accent1);
+  border-left-color: var(--accent1);
+  box-shadow: var(--shadow);
+}
+
+.link-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.link-emoji { font-size: 20px; flex-shrink: 0; line-height: 1.4; }
+
+.link-title-wrap { flex: 1; min-width: 0; }
+
+.link-name {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-url {
+  font-size: 11px;
+  color: var(--link);
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.link-url:hover { color: var(--link-hover); text-decoration: underline; }
+
+.link-desc {
+  font-size: 12px;
+  color: var(--text2);
+  margin: 6px 0;
+  line-height: 1.5;
+}
+
+.link-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.link-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.link-date {
+  font-size: 10px;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+/* Sublinks dentro de card */
+.sublinks-section {
+  margin-top: 8px;
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+}
+
+.sublinks-title {
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.sublink-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.sublink-entry::before {
+  content: '↳';
+  color: var(--accent4);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.sublink-entry a {
+  font-size: 13px;
+  color: var(--accent1);
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  transition: color 0.15s, text-shadow 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sublink-entry a:hover {
+  color: var(--link-hover);
+  text-shadow: 0 0 8px var(--accent1);
+}
+
+.sublink-label {
+  font-size: 11px;
+  color: var(--text2);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SEARCH BAR
+   ============================================================ */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.search-bar input { flex: 1; }
+
+.search-indicator {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 8px;
+  min-height: 16px;
+}
+
+/* ============================================================
+   CATEGORY FILTER
+   ============================================================ */
+.cat-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 12px;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 36px;
+  color: var(--accent1);
+  text-shadow: 0 0 10px var(--accent1);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   CATEGORY LIST (Gestión)
+   ============================================================ */
+.cat-manage-list { margin-top: 8px; }
+
+.cat-manage-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  margin-bottom: 6px;
+}
+
+.cat-manage-name { flex: 1; }
+.cat-manage-count { font-size: 11px; color: var(--text3); }
+
+/* ============================================================
+   REPORT / FILTER
+   ============================================================ */
+.report-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.report-preview {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg3);
+  border: 1px dashed var(--border2);
+  max-height: 400px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.report-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-row:last-child { border-bottom: none; }
+
+.report-row a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.report-row a:hover { text-decoration: underline; }
+
+.report-cat-header {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--accent1);
+  letter-spacing: 2px;
+  padding: 10px 0 4px;
+  border-bottom: 1px solid var(--accent4);
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   IMPORT/EXPORT
+   ============================================================ */
+.export-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.import-drop {
+  border: 2px dashed var(--border2);
+  padding: 24px;
+  text-align: center;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg3);
+  font-size: 13px;
+}
+
+.import-drop:hover, .import-drop.drag-over {
+  border-color: var(--accent1);
+  color: var(--accent1);
+  background: var(--tag-bg);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px 12px;
+  overflow-y: auto;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  width: 100%;
+  max-width: 580px;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0,255,136,0.1);
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--accent1);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 8px;
+  transition: all 0.15s;
+}
+
+.modal-close:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg2);
+  border: 1px solid var(--accent1);
+  color: var(--accent1);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 10px 20px;
+  z-index: 2000;
+  transition: transform 0.3s;
+  white-space: nowrap;
+  box-shadow: var(--glow);
+  text-align: center;
+  max-width: 90vw;
+  white-space: normal;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.error { border-color: var(--danger); color: var(--danger); }
+.toast.warn  { border-color: var(--warn); color: var(--warn); }
+
+/* ============================================================
+   FAB (mobile add)
+   ============================================================ */
+.fab {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent1);
+  color: var(--bg);
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  z-index: 500;
+  box-shadow: var(--glow);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.fab:hover { transform: scale(1.1); }
+
+@media (max-width: 600px) {
+  .fab { display: flex; }
+  .fab-hide-on-mobile { display: none; }
+}
+
+/* ============================================================
+   NETWORK GRAPH (visual bonus)
+   ============================================================ */
+#network-canvas {
+  width: 100%;
+  height: 280px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: block;
+  cursor: grab;
+}
+
+/* ============================================================
+   DARK/LIGHT TOGGLE
+   ============================================================ */
+.theme-toggle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.theme-toggle:hover { border-color: var(--accent1); color: var(--accent1); }
+
+/* ============================================================
+   MISC
+   ============================================================ */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text3);
+  font-size: 13px;
+  border: 1px dashed var(--border);
+  background: var(--bg3);
+}
+
+.empty-state .big { font-family: var(--font-display); font-size: 48px; opacity: 0.3; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+.info-box {
+  background: var(--tag-bg);
+  border-left: 3px solid var(--accent1);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.info-box::before { content: '// '; color: var(--accent4); }
+
+a { color: var(--link); }
+
+/* Collapsed sublinks */
+.sublinks-toggle {
+  font-size: 11px;
+  color: var(--text3);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  padding: 2px 0;
+  transition: color 0.15s;
+}
+
+.sublinks-toggle:hover { color: var(--accent1); }
+.sublinks-body { display: none; }
+.sublinks-body.open { display: block; }
+
+/* Edit inline */
+.edit-highlight { border-color: var(--warn) !important; }
+
+/* Sort bar */
+.sort-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.sort-bar select {
+  width: auto;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  background: var(--accent4);
+  color: var(--bg);
+  font-size: 10px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Progress bar */
+.progress { background: var(--bg3); height: 4px; margin-top: 4px; }
+.progress-fill { background: var(--accent1); height: 4px; transition: width 0.4s; }
+
+
+/* ============================================================
+   SUPERCATEGORÍAS
+   ============================================================ */
+.supercat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--warn);
+  margin-bottom: 14px;
+  padding: 14px;
+  animation: fadeIn 0.3s ease;
+}
+
+.supercat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.supercat-emoji {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.supercat-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--warn);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(232,200,0,0.3);
+  flex: 1;
+}
+
+body.light .supercat-name {
+  text-shadow: none;
+  color: var(--warn);
+}
+
+.supercat-badge {
+  font-size: 11px;
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
+  color: var(--text3);
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+}
+
+.supercat-actions { display: flex; gap: 6px; margin-left: auto; }
+
+.supercat-cats-current {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  min-height: 26px;
+}
+
+.sc-assign-details {
+  border-top: 1px dashed var(--border2);
+  padding-top: 8px;
+}
+
+.sc-assign-summary {
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+
+.sc-assign-summary:hover { color: var(--accent1); }
+.sc-assign-summary::-webkit-details-marker { display: none; }
+
+.sc-cat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+
+.sc-cat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text2);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  text-transform: uppercase;
+}
+
+.sc-cat-label:hover {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.sc-cat-label.sc-cat-checked {
+  border-color: var(--warn);
+  background: var(--tag-bg);
+  color: var(--warn);
+  font-weight: bold;
+}
+
+.sc-cat-label.sc-cat-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sc-cat-check {
+  font-size: 14px;
+  color: var(--accent1);
+}
+
+.sc-cat-checked .sc-cat-check { color: var(--warn); }
+
+.sc-cat-in {
+  font-size: 10px;
+  color: var(--text3);
+  margin-left: 2px;
+}
+
+/* Supercats en la vista BROWSE */
+.browse-supercat-group {
+  margin-bottom: 24px;
+}
+
+.browse-supercat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg2);
+  border-left: 4px solid var(--warn);
+  border-bottom: 1px solid var(--border2);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.browse-supercat-header:hover { background: var(--bg3); }
+
+.browse-supercat-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--warn);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.browse-supercat-meta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+.browse-supercat-body { display: block; }
+.browse-supercat-body.collapsed { display: none; }
+
+.browse-cat-subgroup {
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border2);
+}
+
+.browse-cat-label {
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  padding: 2px 0;
+}
+
+.browse-cat-label::before { content: '↳ '; color: var(--accent4); }
+
+/* ============================================================
+   PALETTE SELECTOR (light mode only)
+   ============================================================ */
+.palette-selector {
+  display: none;
+  gap: 6px;
+  align-items: center;
+}
+
+body.light .palette-selector { display: flex; }
+
+.palette-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.palette-btn:hover { transform: scale(1.2); }
+.palette-btn.active { border-color: var(--text); box-shadow: 0 0 6px rgba(0,0,0,0.4); }
+.palette-btn[data-p="blue"]   { background: #1a5fc8; }
+.palette-btn[data-p="red"]    { background: #c81a2c; }
+.palette-btn[data-p="green"]  { background: #1a9440; }
+.palette-btn[data-p="yellow"] { background: #c89000; }
+.palette-btn[data-p="violet"] { background: #6c1ac8; }
+
+/* ============================================================
+   SHIELD LOGO
+   ============================================================ */
+.shield-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  margin-right: 10px;
+  position: relative;
+}
+
+.shield-svg {
+  width: 52px;
+  height: 58px;
+  filter: drop-shadow(0 0 8px var(--accent1));
+  transition: filter 0.3s;
+}
+
+body.light .shield-svg {
+  filter: drop-shadow(0 0 5px var(--accent1));
+}
+
+.shield-emoji {
+  position: absolute;
+  font-size: 22px;
+  line-height: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -54%);
+  text-shadow: none;
+}
+
+/* ============================================================
+   PRINT (report)
+   ============================================================ */
+@media print {
+  body::before { display: none; }
+  header, .tabs, .fab { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="shield-logo">
+        <svg class="shield-svg" viewBox="0 0 52 58" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:var(--accent3);stop-opacity:1" />
+              <stop offset="100%" style="stop-color:var(--accent4);stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="shieldBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:var(--accent1);stop-opacity:1" />
+              <stop offset="100%" style="stop-color:var(--accent2);stop-opacity:0.6" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Shield body -->
+          <path d="M26,2 L50,12 L50,32 Q50,50 26,57 Q2,50 2,32 L2,12 Z"
+                fill="url(#shieldGrad)" stroke="url(#shieldBorder)" stroke-width="2.5"
+                filter="url(#glow)"/>
+          <!-- Shield inner border -->
+          <path d="M26,7 L45,15 L45,32 Q45,47 26,53 Q7,47 7,32 L7,15 Z"
+                fill="none" stroke="var(--accent1)" stroke-width="1" opacity="0.4"/>
+          <!-- Horizontal band -->
+          <rect x="2" y="22" width="48" height="6" fill="var(--accent1)" opacity="0.15" rx="1"/>
+        </svg>
+        <span class="shield-emoji">🔗</span>
+      </div>
+      <div>
+        <div class="logo">SUPER<span>LINK</span>72</div>
+        <div class="header-meta">
+          <span id="headerCount" class="count">0</span> enlaces · <span id="headerCats">0</span> cat · <span id="headerSuperCats" style="color:var(--warn)">0</span> supercat
+        </div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="palette-selector" id="paletteSelector" title="Color del modo claro">
+        <button class="palette-btn active" data-p="blue"   onclick="setPalette('blue')"   title="Azul"></button>
+        <button class="palette-btn"        data-p="red"    onclick="setPalette('red')"    title="Rojo"></button>
+        <button class="palette-btn"        data-p="green"  onclick="setPalette('green')"  title="Verde"></button>
+        <button class="palette-btn"        data-p="yellow" onclick="setPalette('yellow')" title="Amarillo"></button>
+        <button class="palette-btn"        data-p="violet" onclick="setPalette('violet')" title="Violeta"></button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ CLARO</button>
+      <button class="btn btn-primary fab-hide-on-mobile" onclick="openAddModal()">+ AGREGAR</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAIN APP
+     ============================================================ -->
+<div id="app">
+
+  <!-- TABS -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="switchTab('browse')">📋 ENLACES</button>
+    <button class="tab" onclick="switchTab('add')">➕ AGREGAR</button>
+    <button class="tab" onclick="switchTab('cats')">🗂 CATEGORÍAS</button>
+    <button class="tab" onclick="switchTab('supercats')">⚡ SUPERCATS</button>
+    <button class="tab" onclick="switchTab('report')">📊 REPORTES</button>
+    <button class="tab" onclick="switchTab('network')">🕸 RED</button>
+    <button class="tab" onclick="switchTab('io')">💾 DATOS</button>
+  </div>
+
+  <!-- ======================== TAB: BROWSE ======================== -->
+  <div class="tab-content active" id="tab-browse">
+
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="BUSCAR POR NOMBRE, URL, DESCRIPCIÓN..." oninput="renderLinks()">
+      <button class="btn btn-sm" onclick="document.getElementById('searchInput').value='';renderLinks()">✕</button>
+    </div>
+
+    <div class="sort-bar">
+      <span>ORDENAR:</span>
+      <select id="sortSelect" onchange="renderLinks()">
+        <option value="date-desc">MÁS NUEVO</option>
+        <option value="date-asc">MÁS VIEJO</option>
+        <option value="name-asc">A→Z</option>
+        <option value="name-desc">Z→A</option>
+        <option value="cat-asc">CATEGORÍA</option>
+      </select>
+    </div>
+
+    <div class="cat-filter" id="catFilter"></div>
+    <div class="search-indicator" id="searchInfo"></div>
+    <div class="links-grid" id="linksGrid"></div>
+  </div>
+
+  <!-- ======================== TAB: ADD ======================== -->
+  <div class="tab-content" id="tab-add">
+    <div class="section-title">AGREGAR ENLACE</div>
+    <div id="addFormContainer"></div>
+  </div>
+
+  <!-- ======================== TAB: CATS ======================== -->
+  <div class="tab-content" id="tab-cats">
+    <div class="section-title">GESTIÓN DE CATEGORÍAS</div>
+
+    <div class="form-group" style="display:flex;gap:8px">
+      <input type="text" id="newCatInput" placeholder="NOMBRE DE NUEVA CATEGORÍA" style="flex:1">
+      <button class="btn btn-primary" onclick="addCategory()">+ CREAR</button>
+    </div>
+
+    <div class="info-box">Las categorías sin enlaces pueden eliminarse. Las que tienen enlaces activos quedan protegidas.</div>
+
+    <div class="cat-manage-list" id="catManageList"></div>
+  </div>
+
+  <!-- ======================== TAB: SUPERCATS ======================== -->
+  <div class="tab-content" id="tab-supercats">
+    <div class="section-title">⚡ SUPERCATEGORÍAS</div>
+    <div class="info-box">Agrupá tus categorías bajo una Supercategoría. Cada supercategoría puede contener varias categorías. Los enlaces mantienen su categoría original.</div>
+
+    <div class="supercat-create-form" id="supercatCreateForm">
+      <div class="form-group" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px">
+          <label>NOMBRE DE NUEVA SUPERCATEGORÍA</label>
+          <input type="text" id="newSuperCatInput" placeholder="EJ: TRABAJO, OCIO, INVESTIGACIÓN...">
+        </div>
+        <div style="flex:0 0 auto">
+          <label>EMOJI</label>
+          <div style="display:flex;gap:6px;align-items:center">
+            <div class="selected-emoji-display" id="scEmojiDisplay" onclick="toggleSCEmojiPicker()" style="font-size:20px;padding:6px 10px;cursor:pointer">⚡</div>
+            <button class="btn btn-primary" onclick="createSuperCat()">+ CREAR</button>
+          </div>
+        </div>
+      </div>
+      <div class="emoji-grid" id="scEmojiPicker" style="display:none;margin-top:6px"></div>
+    </div>
+
+    <div id="supercatList" style="margin-top:16px"></div>
+  </div>
+
+  <!-- ======================== TAB: REPORT ======================== -->
+  <div class="tab-content" id="tab-report">
+    <div class="section-title">GENERAR REPORTE</div>
+
+    <div class="report-card">
+      <div class="form-group">
+        <label>FILTRAR POR CATEGORÍA</label>
+        <div id="reportCatFilter" class="cat-filter" style="margin-bottom:0"></div>
+      </div>
+      <div class="form-group">
+        <label>BUSCAR TÉRMINO (OPCIONAL)</label>
+        <input type="text" id="reportSearch" placeholder="FILTRAR POR PALABRA CLAVE...">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="generateReportPreview()">👁 PREVISUALIZAR</button>
+        <button class="btn btn-warn" onclick="exportPDF()">📄 EXPORTAR PDF</button>
+      </div>
+    </div>
+
+    <div id="reportPreview" class="report-preview" style="display:none"></div>
+  </div>
+
+  <!-- ======================== TAB: NETWORK ======================== -->
+  <div class="tab-content" id="tab-network">
+    <div class="section-title">RED DE FUENTES</div>
+    <div class="info-box">Visualización de la red de enlaces por categorías. Hacer click en un nodo para destacarlo.</div>
+    <canvas id="network-canvas"></canvas>
+    <div id="networkInfo" style="font-size:12px;color:var(--text3);margin-top:8px;text-align:center;min-height:20px"></div>
+  </div>
+
+  <!-- ======================== TAB: IO ======================== -->
+  <div class="tab-content" id="tab-io">
+    <div class="section-title">DATOS</div>
+
+    <div class="info-box">Todos los datos se almacenan localmente en tu navegador (localStorage). Exportá copias de seguridad regularmente.</div>
+
+    <div style="margin-bottom:20px">
+      <div class="section-title" style="font-size:16px">EXPORTAR</div>
+      <div class="export-options">
+        <button class="btn btn-primary" onclick="exportJSON()">💾 EXPORTAR JSON</button>
+        <button class="btn" onclick="exportTXT()">📝 EXPORTAR TXT</button>
+        <button class="btn" onclick="exportMarkdown()">📄 EXPORTAR MARKDOWN</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title" style="font-size:16px">IMPORTAR</div>
+      <div class="import-drop" id="importDrop" onclick="document.getElementById('importFile').click()">
+        📂 HACER CLIC O ARRASTRAR ARCHIVO JSON PARA IMPORTAR
+        <br><span style="font-size:11px;opacity:0.6">Solo archivos exportados desde SUPERLINK72</span>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>
+
+    <hr>
+
+    <div style="margin-top:12px">
+      <div class="section-title" style="font-size:16px;color:var(--danger)">ZONA DE PELIGRO</div>
+      <button class="btn btn-danger" onclick="confirmClearAll()">⚠ BORRAR TODOS LOS DATOS</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ============================================================
+     FAB
+     ============================================================ -->
+<button class="fab" onclick="openAddModal()" title="Agregar enlace">+</button>
+
+<!-- ============================================================
+     MODAL: AGREGAR / EDITAR
+     ============================================================ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">NUEVO ENLACE</div>
+    <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    <div id="modalFormContainer"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOAST
+     ============================================================ -->
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ============================================================
+   DATA LAYER
+   ============================================================ */
+const STORE_KEY  = 'superlink72_data';
+const THEME_KEY  = 'superlink72_theme';
+const PALETTE_KEY = 'superlink72_palette';
+
+let db = { links: [], categories: [], supercats: [], version: 3 };
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      db = JSON.parse(raw);
+      if (!db.version) {
+        db.version = 3;
+        db.links.forEach(l => {
+          if (!l.sublinks) l.sublinks = [];
+          if (!l.created)  l.created = Date.now();
+          if (!l.emoji)    l.emoji = '🔗';
+        });
+      }
+      if (db.version === 2) {
+        db.version = 3;
+        if (!db.supercats) db.supercats = [];
+      }
+    }
+    if (!db.categories) db.categories = [];
+    if (!db.supercats)  db.supercats  = [];
+    if (!db.links)      db.links      = [];
+  } catch(e) {
+    console.error('Error loading DB:', e);
+  }
+}
+
+function saveDB() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(db));
+  updateHeader();
+}
+
+/* ============================================================
+   THEME & PALETTE
+   ============================================================ */
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isLight ? '🌙 OSCURO' : '☀ CLARO';
+  document.querySelector('meta[name=theme-color]').setAttribute('content', isLight ? '#dde8f6' : '#0a0f0a');
+  renderNetwork();
+}
+
+function setPalette(p) {
+  document.body.setAttribute('data-palette', p);
+  localStorage.setItem(PALETTE_KEY, p);
+  document.querySelectorAll('.palette-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.p === p);
+  });
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('themeBtn').textContent = '🌙 OSCURO';
+    document.querySelector('meta[name=theme-color]').setAttribute('content', '#dde8f6');
+  }
+  const savedPalette = localStorage.getItem(PALETTE_KEY) || 'blue';
+  setPalette(savedPalette);
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+let activeTab = 'browse';
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  const tabBtns = document.querySelectorAll('.tab');
+  const idx = ['browse','add','cats','supercats','report','network','io'].indexOf(name);
+  if (tabBtns[idx]) tabBtns[idx].classList.add('active');
+  activeTab = name;
+  if (name === 'add')       renderAddForm('addFormContainer');
+  if (name === 'cats')      renderCatManage();
+  if (name === 'supercats') renderSuperCats();
+  if (name === 'report')    renderReportFilters();
+  if (name === 'network')   { setTimeout(renderNetwork, 100); }
+  if (name === 'browse')    renderLinks();
+  window.scrollTo(0,0);
+}
+
+/* ============================================================
+   HEADER / STATS
+   ============================================================ */
+function updateHeader() {
+  document.getElementById('headerCount').textContent = db.links.length;
+  document.getElementById('headerCats').textContent  = db.categories.length;
+  const sc = document.getElementById('headerSuperCats');
+  if (sc) sc.textContent = db.supercats.length;
+}
+
+function renderStats() {
+  const total  = db.links.length;
+  const cats   = db.categories.length;
+  const withSub = db.links.filter(l => l.sublinks && l.sublinks.length > 0).length;
+  const subTotal = db.links.reduce((s,l) => s + (l.sublinks ? l.sublinks.length : 0), 0);
+  const grid = document.getElementById('statsGrid');
+  if (total === 0) { grid.innerHTML = ''; return; }
+  const scCount = db.supercats.length;
+  grid.innerHTML = `
+    <div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">ENLACES</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:var(--warn)">${scCount}</div><div class="stat-label">SUPERCATS</div></div>
+    <div class="stat-card"><div class="stat-number">${cats}</div><div class="stat-label">CATEGORÍAS</div></div>
+    <div class="stat-card"><div class="stat-number">${subTotal}</div><div class="stat-label">SUBLINKS</div></div>
+  `;
+}
+
+/* ============================================================
+   LINK FORM (shared between tab and modal)
+   ============================================================ */
+let editingId = null;
+let selectedEmoji = '🔗';
+let sublinksTemp = [];
+
+const EMOJI_POOL = [
+  '🔗','📰','📚','🎬','🎵','🎨','💻','🌐','📊','🔬','🏛️','⚽','🍔','✈️','🏠',
+  '📷','🎮','💡','🔭','📡','🧬','🎯','📌','🗂️','💼','🧪','🌿','⚡','🔐','📱',
+  '🎧','🖥️','📝','🌍','🚀','🧭','🏆','💰','🔴','🟢','🔵','⭐','❤️','🔥','💧',
+  '🌙','☀️','⚙️','🛒','📬','🎓','⚖️','🧱','🎤','🎻','🎭','🦠','🧠','🤖','🕵️'
+];
+
+function buildForm(containerId, link) {
+  editingId = link ? link.id : null;
+  selectedEmoji = link ? (link.emoji || '🔗') : '🔗';
+  sublinksTemp = link ? JSON.parse(JSON.stringify(link.sublinks || [])) : [];
+
+  const catOptions = db.categories.map(c =>
+    `<option value="${escH(c)}" ${link && link.category === c ? 'selected' : ''}>${escH(c)}</option>`
+  ).join('');
+
+  const sublinksHtml = sublinksTemp.map((sl, i) => buildSublinkRow(sl, i)).join('');
+
+  document.getElementById(containerId).innerHTML = `
+    <div class="form-group">
+      <label>EMOJI</label>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="selected-emoji-display" id="emojiDisplay_${containerId}" onclick="toggleEmojiPicker('${containerId}')">${selectedEmoji}</div>
+        <span style="font-size:11px;color:var(--text3)">← CLICK PARA CAMBIAR</span>
+      </div>
+      <div class="emoji-grid" id="emojiPicker_${containerId}" style="display:none">
+        ${EMOJI_POOL.map(e => `<button class="emoji-btn ${e===selectedEmoji?'selected':''}" onclick="selectEmoji('${containerId}','${e}')">${e}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>NOMBRE DEL SITIO *</label>
+      <input type="text" id="f_name_${containerId}" value="${link ? escH(link.name) : ''}" placeholder="EJ: THE GUARDIAN, ARXIV...">
+    </div>
+
+    <div class="form-group">
+      <label>URL PRINCIPAL *</label>
+      <input type="url" id="f_url_${containerId}" value="${link ? escH(link.url) : ''}" placeholder="https://...">
+    </div>
+
+    <div class="input-row">
+      <div class="form-group">
+        <label>CATEGORÍA</label>
+        <select id="f_cat_${containerId}">
+          <option value="">— SIN CATEGORÍA —</option>
+          ${catOptions}
+          <option value="__new__">+ NUEVA CATEGORÍA</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>TAGS (separados por coma)</label>
+        <input type="text" id="f_tags_${containerId}" value="${link && link.tags ? escH(link.tags.join(', ')) : ''}" placeholder="EJ: NOTICIAS, ENGLISH...">
+      </div>
+    </div>
+
+    <div class="form-group" id="newCatRow_${containerId}" style="display:none">
+      <label>NOMBRE DE NUEVA CATEGORÍA</label>
+      <input type="text" id="f_newcat_${containerId}" placeholder="TECNOLOGÍA, CIENCIA, ETC.">
+    </div>
+
+    <div class="form-group">
+      <label>DESCRIPCIÓN (OPCIONAL)</label>
+      <textarea id="f_desc_${containerId}" placeholder="BREVE DESCRIPCIÓN DEL SITIO...">${link ? escH(link.description || '') : ''}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label>SUBLINKS RELACIONADOS</label>
+      <div class="sublink-list" id="sublinkList_${containerId}">
+        ${sublinksHtml}
+      </div>
+      <button class="btn btn-sm" onclick="addSublinkRow('${containerId}')">+ AGREGAR SUBLINK</button>
+    </div>
+
+    <hr>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="saveLink('${containerId}')">${link ? '💾 GUARDAR CAMBIOS' : '✅ GUARDAR ENLACE'}</button>
+      ${link ? `<button class="btn btn-danger btn-sm" onclick="deleteLink('${link.id}')">🗑 ELIMINAR</button>` : ''}
+    </div>
+  `;
+
+  // Category select watcher
+  setTimeout(() => {
+    const sel = document.getElementById(`f_cat_${containerId}`);
+    if (sel) sel.addEventListener('change', () => {
+      document.getElementById(`newCatRow_${containerId}`).style.display =
+        sel.value === '__new__' ? 'block' : 'none';
+    });
+  }, 50);
+}
+
+function buildSublinkRow(sl, i) {
+  return `
+    <div class="sublink-item" id="slrow_${i}">
+      <input type="text" placeholder="ETIQUETA (EJ: FORO)" style="width:30%;min-width:80px" value="${escH(sl.label||'')}" oninput="updateSublink(${i},'label',this.value)">
+      <input type="url" placeholder="URL" style="flex:1" value="${escH(sl.url||'')}" oninput="updateSublink(${i},'url',this.value)">
+      <button class="btn btn-danger btn-sm btn-icon" onclick="removeSublinkRow(${i})">✕</button>
+    </div>`;
+}
+
+function addSublinkRow(cid) {
+  sublinksTemp.push({ label: '', url: '' });
+  const i = sublinksTemp.length - 1;
+  const list = document.getElementById(`sublinkList_${cid}`);
+  const div = document.createElement('div');
+  div.innerHTML = buildSublinkRow({ label:'', url:'' }, i);
+  list.appendChild(div.firstElementChild);
+}
+
+function removeSublinkRow(i) {
+  sublinksTemp.splice(i, 1);
+  const activeContainer = editingId ? 'modalFormContainer' :
+    (activeTab === 'add' ? 'addFormContainer' : 'modalFormContainer');
+  buildForm(activeContainer, editingId ? db.links.find(l=>l.id===editingId) : null);
+}
+
+function updateSublink(i, key, val) {
+  if (sublinksTemp[i]) sublinksTemp[i][key] = val;
+}
+
+function toggleEmojiPicker(cid) {
+  const picker = document.getElementById(`emojiPicker_${cid}`);
+  picker.style.display = picker.style.display === 'none' ? 'flex' : 'none';
+}
+
+function selectEmoji(cid, emoji) {
+  selectedEmoji = emoji;
+  document.getElementById(`emojiDisplay_${cid}`).textContent = emoji;
+  document.querySelectorAll(`#emojiPicker_${cid} .emoji-btn`).forEach(b => {
+    b.classList.toggle('selected', b.textContent === emoji);
+  });
+}
+
+function saveLink(cid) {
+  const name = document.getElementById(`f_name_${cid}`).value.trim();
+  const url  = document.getElementById(`f_url_${cid}`).value.trim();
+  let   cat  = document.getElementById(`f_cat_${cid}`).value;
+  const desc = document.getElementById(`f_desc_${cid}`).value.trim();
+  const tagsRaw = document.getElementById(`f_tags_${cid}`).value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(t=>t.trim().toUpperCase()).filter(Boolean) : [];
+
+  // Sync sublinks from DOM
+  document.querySelectorAll(`#sublinkList_${cid} .sublink-item`).forEach((row, i) => {
+    const inputs = row.querySelectorAll('input');
+    if (sublinksTemp[i]) {
+      sublinksTemp[i].label = inputs[0].value.trim();
+      sublinksTemp[i].url   = inputs[1].value.trim();
+    }
+  });
+
+  if (!name) { showToast('El nombre es obligatorio', 'error'); return; }
+  if (!url)  { showToast('La URL es obligatoria', 'error');   return; }
+  if (!/^https?:\/\//i.test(url)) { showToast('La URL debe comenzar con http:// o https://', 'warn'); return; }
+
+  // New category
+  if (cat === '__new__') {
+    const nc = document.getElementById(`f_newcat_${cid}`).value.trim().toUpperCase();
+    if (!nc) { showToast('Ingresá el nombre de la nueva categoría', 'warn'); return; }
+    if (!db.categories.includes(nc)) db.categories.push(nc);
+    cat = nc;
+  }
+
+  const sublinks = sublinksTemp.filter(s => s.url);
+
+  if (editingId) {
+    const idx = db.links.findIndex(l => l.id === editingId);
+    if (idx !== -1) {
+      db.links[idx] = { ...db.links[idx], name, url, category: cat, description: desc, emoji: selectedEmoji, sublinks, tags, modified: Date.now() };
+      showToast('✅ Enlace actualizado');
+    }
+    closeModal('addModal');
+    editingId = null;
+  } else {
+    db.links.push({ id: genId(), name, url, category: cat, description: desc, emoji: selectedEmoji, sublinks, tags, created: Date.now() });
+    showToast('✅ Enlace guardado');
+    buildForm(cid, null);
+    if (cid === 'modalFormContainer') closeModal('addModal');
+  }
+
+  saveDB();
+  renderLinks();
+  renderStats();
+}
+
+/* ============================================================
+   RENDER ADD FORM (tab)
+   ============================================================ */
+function renderAddForm(cid) {
+  editingId = null;
+  sublinksTemp = [];
+  buildForm(cid, null);
+}
+
+/* ============================================================
+   RENDER LINKS
+   ============================================================ */
+let activeCatFilter = '__all__';
+
+function renderLinks() {
+  renderStats();
+  renderCatFilter();
+
+  const query = (document.getElementById('searchInput').value || '').toLowerCase();
+  const sort  = document.getElementById('sortSelect').value;
+
+  let list = [...db.links];
+
+  if (activeCatFilter !== '__all__') {
+    if (activeCatFilter === '__nocat__') list = list.filter(l => !l.category);
+    else list = list.filter(l => l.category === activeCatFilter);
+  }
+
+  if (query) {
+    list = list.filter(l =>
+      l.name.toLowerCase().includes(query) ||
+      l.url.toLowerCase().includes(query) ||
+      (l.description && l.description.toLowerCase().includes(query)) ||
+      (l.category && l.category.toLowerCase().includes(query)) ||
+      (l.tags && l.tags.some(t => t.toLowerCase().includes(query)))
+    );
+  }
+
+  // sort
+  list.sort((a,b) => {
+    if (sort === 'date-desc') return (b.created||0) - (a.created||0);
+    if (sort === 'date-asc')  return (a.created||0) - (b.created||0);
+    if (sort === 'name-asc')  return a.name.localeCompare(b.name);
+    if (sort === 'name-desc') return b.name.localeCompare(a.name);
+    if (sort === 'cat-asc')   return (a.category||'').localeCompare(b.category||'');
+    return 0;
+  });
+
+  const info = document.getElementById('searchInfo');
+  if (query || activeCatFilter !== '__all__') {
+    info.textContent = `Mostrando ${list.length} de ${db.links.length} enlaces`;
+  } else {
+    info.textContent = '';
+  }
+
+  const grid = document.getElementById('linksGrid');
+
+  if (db.links.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="big">🔗</div>
+        <div>No hay enlaces todavía.</div>
+        <div style="margin-top:8px">
+          <button class="btn btn-primary" onclick="switchTab('add')">+ AGREGAR PRIMER ENLACE</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div>No hay resultados para este filtro.</div></div>`;
+    return;
+  }
+
+  // Si no hay filtro activo y hay supercats, mostrar vista agrupada
+  const noFilter = activeCatFilter === '__all__' && !query;
+  if (noFilter && db.supercats.length > 0) {
+    grid.innerHTML = renderGroupedBySuperCat(list);
+  } else {
+    grid.innerHTML = list.map(l => renderLinkCard(l)).join('');
+  }
+}
+
+
+function renderGroupedBySuperCat(list) {
+  let html = '';
+  const usedIds = new Set();
+
+  // Grupos con supercategoría
+  db.supercats.forEach(sc => {
+    const scLinks = list.filter(l => sc.cats.includes(l.category||''));
+    if (scLinks.length === 0) return;
+
+    // Agrupar por categoría dentro de la supercat
+    const catGroups = {};
+    scLinks.forEach(l => {
+      const c = l.category || 'SIN CATEGORÍA';
+      if (!catGroups[c]) catGroups[c] = [];
+      catGroups[c].push(l);
+      usedIds.add(l.id);
+    });
+
+    const scId = 'bsc_' + sc.id;
+    html += `
+      <div class="browse-supercat-group">
+        <div class="browse-supercat-header" onclick="toggleBrowseSC('${scId}')">
+          <span style="font-size:20px">${sc.emoji}</span>
+          <span class="browse-supercat-title">${escH(sc.name)}</span>
+          <span class="browse-supercat-meta">${scLinks.length} enlace${scLinks.length!==1?'s':''} · ${sc.cats.length} cat</span>
+          <span id="${scId}_arrow" style="color:var(--text3);font-size:12px">▼</span>
+        </div>
+        <div class="browse-supercat-body" id="${scId}">
+          ${Object.entries(catGroups).map(([cat, links]) => `
+            <div class="browse-cat-subgroup">
+              <div class="browse-cat-label">${escH(cat)} <span style="color:var(--accent4)">(${links.length})</span></div>
+              <div class="links-grid">${links.map(l => renderLinkCard(l)).join('')}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  });
+
+  // Links sin supercategoría asignada
+  const orphans = list.filter(l => !usedIds.has(l.id));
+  if (orphans.length > 0) {
+    html += `
+      <div class="browse-supercat-group">
+        <div class="browse-supercat-header" onclick="toggleBrowseSC('bsc_orphan')" style="border-left-color:var(--border2)">
+          <span style="font-size:20px">🗂</span>
+          <span class="browse-supercat-title" style="color:var(--text2)">SIN SUPERCATEGORÍA</span>
+          <span class="browse-supercat-meta">${orphans.length} enlace${orphans.length!==1?'s':''}</span>
+          <span id="bsc_orphan_arrow" style="color:var(--text3);font-size:12px">▼</span>
+        </div>
+        <div class="browse-supercat-body" id="bsc_orphan">
+          <div class="links-grid">${orphans.map(l => renderLinkCard(l)).join('')}</div>
+        </div>
+      </div>`;
+  }
+
+  return html;
+}
+
+function toggleBrowseSC(id) {
+  const body  = document.getElementById(id);
+  const arrow = document.getElementById(id + '_arrow');
+  if (!body) return;
+  const collapsed = body.classList.toggle('collapsed');
+  if (arrow) arrow.textContent = collapsed ? '▶' : '▼';
+}
+
+function renderLinkCard(l) {
+  const dateStr = l.created ? new Date(l.created).toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'2-digit' }) : '';
+  const tags = (l.tags||[]).map(t => `<span class="tag" onclick="quickTagFilter('${escA(t)}')">${escH(t)}</span>`).join('');
+  const sublinksVisible = l.sublinks ? l.sublinks.filter(s=>s.url) : [];
+  const sublinksHtml = sublinksVisible.length > 0 ? `
+    <div class="sublinks-section">
+      <button class="sublinks-toggle" onclick="toggleSublinks('sl_${l.id}')">▶ ${sublinksVisible.length} SUBLINK${sublinksVisible.length>1?'S':''}</button>
+      <div class="sublinks-body" id="sl_${l.id}">
+        ${sublinksVisible.map(s=>`
+          <div class="sublink-entry">
+            <a href="${escH(s.url)}" target="_blank" rel="noopener" title="${escH(s.url)}">${escH(s.label || s.url)}</a>
+          </div>
+        `).join('')}
+      </div>
+    </div>` : '';
+
+  const catBadge = l.category ? `<span class="tag">${escH(l.category)}</span>` : '';
+
+  return `
+    <div class="link-card" id="card_${l.id}">
+      <div class="link-card-header">
+        <div class="link-emoji">${l.emoji || '🔗'}</div>
+        <div class="link-title-wrap">
+          <div class="link-name">${escH(l.name)}</div>
+          <a class="link-url" href="${escH(l.url)}" target="_blank" rel="noopener">${escH(l.url)}</a>
+        </div>
+      </div>
+      ${l.description ? `<div class="link-desc">${escH(l.description)}</div>` : ''}
+      <div class="link-meta">
+        ${catBadge}
+        ${tags}
+        <span class="link-date">${dateStr}</span>
+      </div>
+      ${sublinksHtml}
+      <div class="link-card-actions">
+        <button class="btn btn-sm" onclick="editLink('${l.id}')">✏ EDITAR</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteLink('${l.id}')">🗑</button>
+        <a class="btn btn-sm btn-primary" href="${escH(l.url)}" target="_blank" rel="noopener">↗ ABRIR</a>
+      </div>
+    </div>`;
+}
+
+function toggleSublinks(id) {
+  const body = document.getElementById(id);
+  const btn = body.previousElementSibling;
+  const isOpen = body.classList.toggle('open');
+  btn.textContent = (isOpen ? '▼' : '▶') + btn.textContent.slice(1);
+}
+
+function quickTagFilter(tag) {
+  document.getElementById('searchInput').value = tag;
+  switchTab('browse');
+  renderLinks();
+}
+
+/* ============================================================
+   CAT FILTER CHIPS
+   ============================================================ */
+function renderCatFilter() {
+  const div = document.getElementById('catFilter');
+  const cats = [...new Set(db.links.map(l=>l.category).filter(Boolean))];
+  const hasNocat = db.links.some(l=>!l.category);
+  let html = `<span class="tag ${activeCatFilter==='__all__'?'active':''}" onclick="setCatFilter('__all__')">TODOS</span>`;
+
+  // Separar cats por supercat para mostrarlas agrupadas en el filtro
+  const scAssigned = new Set();
+  db.supercats.forEach(sc => {
+    const scCats = cats.filter(c => sc.cats.includes(c));
+    if (scCats.length === 0) return;
+    html += `<span style="font-size:10px;color:var(--warn);align-self:center;padding:0 4px;letter-spacing:1px">${sc.emoji}${escH(sc.name)}:</span>`;
+    scCats.forEach(c => {
+      html += `<span class="tag ${activeCatFilter===c?'active':''}" onclick="setCatFilter('${escA(c)}')">${escH(c)}</span>`;
+      scAssigned.add(c);
+    });
+  });
+
+  // Cats sin supercat
+  const freeCats = cats.filter(c => !scAssigned.has(c));
+  if (freeCats.length > 0) {
+    if (db.supercats.length > 0)
+      html += `<span style="font-size:10px;color:var(--text3);align-self:center;padding:0 4px">🗂 OTRAS:</span>`;
+    freeCats.forEach(c => {
+      html += `<span class="tag ${activeCatFilter===c?'active':''}" onclick="setCatFilter('${escA(c)}')">${escH(c)}</span>`;
+    });
+  }
+
+  if (hasNocat) html += `<span class="tag ${activeCatFilter==='__nocat__'?'active':''}" onclick="setCatFilter('__nocat__')">SIN CATEGORÍA</span>`;
+  div.innerHTML = html;
+}
+
+function setCatFilter(cat) {
+  activeCatFilter = cat;
+  renderLinks();
+}
+
+/* ============================================================
+   EDIT / DELETE
+   ============================================================ */
+function editLink(id) {
+  const link = db.links.find(l=>l.id===id);
+  if (!link) return;
+  sublinksTemp = JSON.parse(JSON.stringify(link.sublinks || []));
+  buildForm('modalFormContainer', link);
+  document.getElementById('modalTitle').textContent = 'EDITAR ENLACE';
+  openModal('addModal');
+}
+
+function deleteLink(id) {
+  if (!confirm('¿Eliminar este enlace?')) return;
+  db.links = db.links.filter(l=>l.id!==id);
+  saveDB();
+  renderLinks();
+  closeModal('addModal');
+  showToast('🗑 Enlace eliminado');
+}
+
+/* ============================================================
+   CATEGORIES (manage)
+   ============================================================ */
+function addCategory() {
+  const input = document.getElementById('newCatInput');
+  const name  = input.value.trim().toUpperCase();
+  if (!name) { showToast('Ingresá un nombre', 'warn'); return; }
+  if (db.categories.includes(name)) { showToast('Esa categoría ya existe', 'warn'); return; }
+  db.categories.push(name);
+  saveDB();
+  input.value = '';
+  renderCatManage();
+  showToast('✅ Categoría creada');
+}
+
+function renderCatManage() {
+  const list = document.getElementById('catManageList');
+  if (db.categories.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div>No hay categorías. Creá la primera arriba.</div></div>';
+    return;
+  }
+  list.innerHTML = db.categories.map(c => {
+    const count = db.links.filter(l=>l.category===c).length;
+    return `
+      <div class="cat-manage-item">
+        <span class="cat-manage-name">${escH(c)}</span>
+        <span class="cat-manage-count">${count} enlace${count!==1?'s':''}</span>
+        ${count === 0 ? `<button class="btn btn-danger btn-sm" onclick="deleteCategory('${escA(c)}')">✕</button>` : '<span style="width:44px"></span>'}
+      </div>`;
+  }).join('');
+}
+
+
+/* ============================================================
+   SUPERCATEGORÍAS
+   ============================================================ */
+let scSelectedEmoji = '⚡';
+
+const SC_EMOJI_POOL = ['⚡','🌟','🔥','🏆','💼','🎯','🚀','🧠','🌐','📦',
+  '🎨','🔬','📚','🎵','🏛️','💡','⚙️','🛡️','🌿','💎','🗺️','🔭','🎭','🤖','🧭'];
+
+function initSCEmojiPicker() {
+  const grid = document.getElementById('scEmojiPicker');
+  if (!grid || grid.children.length > 0) return;
+  grid.innerHTML = SC_EMOJI_POOL.map(e =>
+    `<button class="emoji-btn ${e===scSelectedEmoji?'selected':''}" onclick="selectSCEmoji('${e}')">${e}</button>`
+  ).join('');
+}
+
+function toggleSCEmojiPicker() {
+  initSCEmojiPicker();
+  const p = document.getElementById('scEmojiPicker');
+  p.style.display = p.style.display === 'none' ? 'flex' : 'none';
+}
+
+function selectSCEmoji(e) {
+  scSelectedEmoji = e;
+  document.getElementById('scEmojiDisplay').textContent = e;
+  document.querySelectorAll('#scEmojiPicker .emoji-btn').forEach(b =>
+    b.classList.toggle('selected', b.textContent === e));
+  document.getElementById('scEmojiPicker').style.display = 'none';
+}
+
+function createSuperCat() {
+  const name = document.getElementById('newSuperCatInput').value.trim().toUpperCase();
+  if (!name) { showToast('Ingresá un nombre', 'warn'); return; }
+  if (db.supercats.find(s => s.name === name)) { showToast('Ya existe esa supercategoría', 'warn'); return; }
+  db.supercats.push({ id: genId(), name, emoji: scSelectedEmoji, cats: [] });
+  saveDB();
+  document.getElementById('newSuperCatInput').value = '';
+  renderSuperCats();
+  showToast('✅ Supercategoría creada: ' + name);
+}
+
+function deleteSuperCat(id) {
+  if (!confirm('¿Eliminar esta supercategoría? Las categorías que contiene no se borran.')) return;
+  db.supercats = db.supercats.filter(s => s.id !== id);
+  saveDB();
+  renderSuperCats();
+  showToast('Supercategoría eliminada');
+}
+
+function toggleCatInSuperCat(scId, catName) {
+  const sc = db.supercats.find(s => s.id === scId);
+  if (!sc) return;
+  if (sc.cats.includes(catName)) {
+    sc.cats = sc.cats.filter(c => c !== catName);
+  } else {
+    // Verificar que esta categoría no esté ya en otra supercat
+    const alreadyIn = db.supercats.find(s => s.id !== scId && s.cats.includes(catName));
+    if (alreadyIn) {
+      showToast(`"${catName}" ya está en "${alreadyIn.name}". Quitala de ahí primero.`, 'warn');
+      return;
+    }
+    sc.cats.push(catName);
+  }
+  saveDB();
+  renderSuperCats();
+}
+
+function renameSuperCat(id) {
+  const sc = db.supercats.find(s => s.id === id);
+  if (!sc) return;
+  const newName = prompt('Nuevo nombre para la supercategoría:', sc.name);
+  if (!newName || !newName.trim()) return;
+  const upper = newName.trim().toUpperCase();
+  if (db.supercats.find(s => s.id !== id && s.name === upper)) {
+    showToast('Ese nombre ya existe', 'warn'); return;
+  }
+  sc.name = upper;
+  saveDB();
+  renderSuperCats();
+  showToast('✅ Renombrado a ' + upper);
+}
+
+function renderSuperCats() {
+  initSCEmojiPicker();
+  const container = document.getElementById('supercatList');
+  if (!container) return;
+
+  if (db.supercats.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="big">⚡</div>
+        <div>Todavía no hay supercategorías.</div>
+        <div style="margin-top:8px;font-size:11px;color:var(--text3)">Creá una arriba y agrupá tus categorías.</div>
+      </div>`;
+    return;
+  }
+
+  // Categorías disponibles (todas)
+  const allCats = db.categories;
+
+  container.innerHTML = db.supercats.map(sc => {
+    const linkCount = db.links.filter(l => sc.cats.includes(l.category||'')).length;
+
+    const catCheckboxes = allCats.length === 0
+      ? '<div style="color:var(--text3);font-size:12px">No hay categorías creadas todavía.</div>'
+      : allCats.map(cat => {
+          const checked = sc.cats.includes(cat);
+          const otherSC = !checked && db.supercats.find(s => s.id !== sc.id && s.cats.includes(cat));
+          const disabled = !!otherSC;
+          return `
+            <label class="sc-cat-label ${checked ? 'sc-cat-checked' : ''} ${disabled ? 'sc-cat-disabled' : ''}"
+                   onclick="${disabled ? '' : `toggleCatInSuperCat('${sc.id}','${cat.replace(/'/g,"\'")}');event.preventDefault()`}"
+                   title="${disabled ? 'Ya asignada a '+otherSC.name : ''}">
+              <span class="sc-cat-check">${checked ? '▣' : '▢'}</span>
+              ${cat}
+              ${disabled ? `<span class="sc-cat-in">(${otherSC.name})</span>` : ''}
+            </label>`;
+        }).join('');
+
+    const catTags = sc.cats.length > 0
+      ? sc.cats.map(c => `<span class="tag" style="cursor:default">${c}</span>`).join('')
+      : '<span style="color:var(--text3);font-size:11px">Sin categorías asignadas</span>';
+
+    return `
+      <div class="supercat-card">
+        <div class="supercat-header">
+          <span class="supercat-emoji">${sc.emoji}</span>
+          <span class="supercat-name">${escH(sc.name)}</span>
+          <span class="supercat-badge">${linkCount} enlace${linkCount!==1?'s':''}</span>
+          <div class="supercat-actions">
+            <button class="btn btn-sm" onclick="renameSuperCat('${sc.id}')">✏</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteSuperCat('${sc.id}')">🗑</button>
+          </div>
+        </div>
+        <div class="supercat-cats-current">${catTags}</div>
+        <details class="sc-assign-details">
+          <summary class="sc-assign-summary">⚙ ASIGNAR / QUITAR CATEGORÍAS</summary>
+          <div class="sc-cat-grid">${catCheckboxes}</div>
+        </details>
+      </div>`;
+  }).join('');
+}
+
+function deleteCategory(name) {
+  const count = db.links.filter(l=>l.category===name).length;
+  if (count > 0) { showToast('No se puede eliminar: tiene enlaces activos', 'error'); return; }
+  db.categories = db.categories.filter(c=>c!==name);
+  saveDB();
+  renderCatManage();
+  showToast('Categoría eliminada');
+}
+
+/* ============================================================
+   REPORT
+   ============================================================ */
+let reportCatFilter = new Set(['__all__']);
+
+function renderReportFilters() {
+  const div = document.getElementById('reportCatFilter');
+  const cats = [...new Set(db.links.map(l=>l.category).filter(Boolean))];
+  let html = `<span class="tag ${reportCatFilter.has('__all__')?'active':''}" onclick="toggleReportCat('__all__')">TODAS</span>`;
+  cats.forEach(c => {
+    html += `<span class="tag ${reportCatFilter.has(c)?'active':''}" onclick="toggleReportCat('${escA(c)}')">${escH(c)}</span>`;
+  });
+  div.innerHTML = html;
+}
+
+function toggleReportCat(cat) {
+  if (cat === '__all__') {
+    reportCatFilter = new Set(['__all__']);
+  } else {
+    reportCatFilter.delete('__all__');
+    if (reportCatFilter.has(cat)) reportCatFilter.delete(cat);
+    else reportCatFilter.add(cat);
+    if (reportCatFilter.size === 0) reportCatFilter.add('__all__');
+  }
+  renderReportFilters();
+}
+
+function getReportLinks() {
+  const q = (document.getElementById('reportSearch').value || '').toLowerCase();
+  let list = [...db.links];
+  if (!reportCatFilter.has('__all__')) {
+    list = list.filter(l => reportCatFilter.has(l.category||''));
+  }
+  if (q) {
+    list = list.filter(l =>
+      l.name.toLowerCase().includes(q) ||
+      (l.description && l.description.toLowerCase().includes(q)) ||
+      (l.tags && l.tags.some(t=>t.toLowerCase().includes(q)))
+    );
+  }
+  return list;
+}
+
+function generateReportPreview() {
+  const list = getReportLinks();
+  const preview = document.getElementById('reportPreview');
+  if (list.length === 0) {
+    preview.innerHTML = '<div style="color:var(--text3)">No hay enlaces para los filtros seleccionados.</div>';
+    preview.style.display = 'block';
+    return;
+  }
+
+  // group by category
+  const groups = {};
+  list.forEach(l => {
+    const cat = l.category || 'SIN CATEGORÍA';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(l);
+  });
+
+  let html = `<div style="font-size:11px;color:var(--text3);margin-bottom:12px">PREVISUALIZACIÓN — ${list.length} ENLACE${list.length!==1?'S':''}</div>`;
+  Object.entries(groups).forEach(([cat, links]) => {
+    html += `<div class="report-cat-header">${escH(cat)} <span style="font-size:14px;color:var(--text3)">(${links.length})</span></div>`;
+    links.forEach(l => {
+      html += `
+        <div class="report-row">
+          <div><strong>${l.emoji||'🔗'} ${escH(l.name)}</strong></div>
+          <div><a href="${escH(l.url)}" target="_blank" rel="noopener">${escH(l.url)}</a></div>
+          ${l.description ? `<div style="color:var(--text3);font-size:11px;margin-top:2px">${escH(l.description)}</div>` : ''}
+          ${l.sublinks && l.sublinks.length > 0 ? `<div style="margin-top:4px">` + l.sublinks.filter(s=>s.url).map(s =>
+            `<div style="margin-left:12px;font-size:11px">↳ ${s.label ? escH(s.label)+': ' : ''}<a href="${escH(s.url)}" target="_blank">${escH(s.url)}</a></div>`
+          ).join('') + '</div>' : ''}
+        </div>`;
+    });
+  });
+
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+function exportPDF() {
+  const list = getReportLinks();
+  if (list.length === 0) { showToast('No hay enlaces para exportar', 'warn'); return; }
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 14;
+    const maxW   = pageW - margin * 2;
+    let y = margin;
+
+    // ── PALETA B&N AHORRO DE TÓNER ─────────────────────────────
+    // Regla: cero rellenos sólidos, cero negros puros en bloques,
+    // solo texto en escala de grises + bordes de 0.1-0.2 pt.
+    const C = {
+      black:     [0,   0,   0  ],   // títulos principales
+      dark:      [40,  40,  40 ],   // nombres de enlace
+      mid:       [100, 100, 100],   // descripción, conteos
+      light:     [160, 160, 160],   // tags, sublinks, nota
+      hairline:  [200, 200, 200],   // líneas separadoras
+      catLine:   [120, 120, 120],   // línea debajo de categoría
+    };
+
+    const setTxt  = (rgb) => doc.setTextColor(...rgb);
+    const setDraw = (rgb, lw=0.15) => { doc.setDrawColor(...rgb); doc.setLineWidth(lw); };
+
+    // ── HEADER — solo borde inferior fino, sin relleno ─────────
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    setTxt(C.black);
+    doc.text('SUPERLINK72', margin, y + 7);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    setTxt(C.mid);
+    doc.text(
+      `Reporte · ${new Date().toLocaleDateString('es-AR')} · ${list.length} enlace${list.length!==1?'s':''}`,
+      margin, y + 13
+    );
+
+    setDraw(C.catLine, 0.3);
+    doc.line(margin, y + 16, pageW - margin, y + 16);
+    y += 22;
+
+    // Nota de instrucción
+    doc.setFontSize(7);
+    setTxt(C.light);
+    doc.text('Clic en el nombre de cada enlace para abrirlo en el navegador.', margin, y);
+    y += 7;
+
+    // ── GRUPOS POR CATEGORÍA ────────────────────────────────────
+    const groups = {};
+    list.forEach(l => {
+      const cat = l.category || 'SIN CATEGORÍA';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(l);
+    });
+
+    const checkPage = (needed) => {
+      if (y + needed > pageH - margin - 8) {
+        doc.addPage();
+        // Encabezado mínimo en páginas siguientes
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        setTxt(C.light);
+        doc.text('SUPERLINK72 (continuación)', margin, 8);
+        setDraw(C.hairline, 0.1);
+        doc.line(margin, 10, pageW - margin, 10);
+        y = 15;
+      }
+    };
+
+    Object.entries(groups).forEach(([cat, links], gi) => {
+      checkPage(16);
+
+      // Título de categoría: texto negro + línea fina debajo (sin rectángulo)
+      if (gi > 0) y += 3;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      setTxt(C.black);
+      doc.text(`${cat.toUpperCase()}  (${links.length})`, margin, y);
+      setDraw(C.catLine, 0.25);
+      doc.line(margin, y + 2, pageW - margin, y + 2);
+      y += 7;
+
+      links.forEach((l, li) => {
+        checkPage(18);
+
+        // Nombre — negrita, oscuro, con anotación de hipervínculo
+        const nameLabel = `${l.name}`;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        setTxt(C.dark);
+        const nameW = doc.getTextWidth(nameLabel);
+        doc.text(nameLabel, margin + 4, y);
+        // Subrayado fino manual (evita el grueso default del subrayado de jsPDF)
+        setDraw(C.mid, 0.15);
+        doc.line(margin + 4, y + 0.5, margin + 4 + nameW, y + 0.5);
+        // Anotación de link (sin /NewWindow — los lectores lo manejan por defecto)
+        doc.link(margin + 4, y - 4, nameW, 5.5, { url: l.url });
+        doc.setFont('helvetica', 'normal');
+        y += 5.5;
+
+        // Descripción
+        if (l.description) {
+          doc.setFontSize(8);
+          setTxt(C.mid);
+          const descLines = doc.splitTextToSize(l.description, maxW - 8);
+          descLines.forEach(line => {
+            checkPage(5);
+            doc.text(line, margin + 4, y);
+            y += 4;
+          });
+        }
+
+        // Tags
+        if (l.tags && l.tags.length > 0) {
+          doc.setFontSize(7);
+          setTxt(C.light);
+          doc.text('Tags: ' + l.tags.join(' · '), margin + 4, y);
+          y += 4;
+        }
+
+        // Sublinks — solo etiqueta, como link clickeable
+        const visibleSubs = (l.sublinks||[]).filter(s=>s.url);
+        if (visibleSubs.length > 0) {
+          visibleSubs.forEach(s => {
+            checkPage(5);
+            const slLabel = `↳ ${s.label || 'Subenlace'}`;
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            setTxt(C.mid);
+            const slW = doc.getTextWidth(slLabel);
+            doc.text(slLabel, margin + 8, y);
+            setDraw(C.light, 0.12);
+            doc.line(margin + 8, y + 0.5, margin + 8 + slW, y + 0.5);
+            doc.link(margin + 8, y - 3.5, slW, 4.5, { url: s.url });
+            doc.setFont('helvetica', 'normal');
+            y += 4.5;
+          });
+        }
+
+        // Separador entre enlaces: línea punteada muy clara
+        y += 1.5;
+        if (li < links.length - 1) {
+          setDraw(C.hairline, 0.1);
+          // Línea punteada simulada con guiones
+          let xd = margin + 4;
+          while (xd < pageW - margin) {
+            doc.line(xd, y, Math.min(xd + 3, pageW - margin), y);
+            xd += 5;
+          }
+          y += 3;
+        }
+      });
+    });
+
+    // ── PIE DE PÁGINA ───────────────────────────────────────────
+    const pages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      setDraw(C.hairline, 0.1);
+      doc.line(margin, pageH - 10, pageW - margin, pageH - 10);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      setTxt(C.light);
+      doc.text(`SUPERLINK72 — pág. ${i} / ${pages}`, pageW - margin, pageH - 6, { align: 'right' });
+    }
+
+    doc.save(`superlink72_reporte_${Date.now()}.pdf`);
+    showToast('✅ PDF generado (modo ahorro de tóner)');
+  } catch(e) {
+    showToast('Error al generar PDF: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
+/* ============================================================
+   NETWORK GRAPH
+   ============================================================ */
+let netAnim = null;
+let netNodes = [];
+let netEdges = [];
+let netDrag = null;
+let netSelected = null;
+
+function renderNetwork() {
+  const canvas = document.getElementById('network-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const isLight = document.body.classList.contains('light');
+  const bgCol   = isLight ? '#e0dace' : '#0e160e';
+  const txtCol  = isLight ? '#2a3a1a' : '#c8e8c8';
+  const edgeCol = isLight ? 'rgba(120,160,80,0.4)' : 'rgba(0,200,100,0.3)';
+
+  // Colors for category nodes
+  const PALETTE = ['#00ff88','#39ff14','#ffcc00','#ff8844','#44aaff','#ff44aa','#aa88ff','#44ffee'];
+
+  if (netAnim) cancelAnimationFrame(netAnim);
+
+  // Build nodes: categories + links
+  const cats = [...new Set(db.links.map(l=>l.category||'SIN CATEGORÍA'))];
+  netNodes = [];
+  netEdges = [];
+
+  if (db.links.length === 0) {
+    ctx.fillStyle = bgCol;
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = isLight ? '#7a8a6a' : '#5a7a5a';
+    ctx.font = "14px 'Share Tech Mono'";
+    ctx.textAlign = 'center';
+    ctx.fillText('AGREGA ENLACES PARA VER LA RED', W/2, H/2);
+    return;
+  }
+
+  // Category nodes (center-ish)
+  cats.forEach((cat, i) => {
+    const angle = (i / cats.length) * Math.PI * 2;
+    const r = Math.min(W, H) * 0.28;
+    netNodes.push({
+      id: 'cat_' + cat,
+      label: cat.length > 12 ? cat.slice(0,12)+'…' : cat,
+      fullLabel: cat,
+      x: W/2 + Math.cos(angle) * r,
+      y: H/2 + Math.sin(angle) * r,
+      vx: 0, vy: 0,
+      radius: 22,
+      type: 'cat',
+      color: PALETTE[i % PALETTE.length],
+      count: db.links.filter(l=>(l.category||'SIN CATEGORÍA')===cat).length
+    });
+  });
+
+  // Link nodes
+  db.links.forEach((l, i) => {
+    const cat = l.category || 'SIN CATEGORÍA';
+    const catNode = netNodes.find(n=>n.id==='cat_'+cat);
+    const spread = 60 + Math.random() * 40;
+    const angle2 = Math.random() * Math.PI * 2;
+    netNodes.push({
+      id: 'link_' + l.id,
+      label: l.name.length > 10 ? l.name.slice(0,10)+'…' : l.name,
+      fullLabel: l.name,
+      url: l.url,
+      x: (catNode ? catNode.x : W/2) + Math.cos(angle2)*spread,
+      y: (catNode ? catNode.y : H/2) + Math.sin(angle2)*spread,
+      vx: (Math.random()-0.5)*0.5,
+      vy: (Math.random()-0.5)*0.5,
+      radius: 8,
+      type: 'link',
+      color: catNode ? catNode.color : PALETTE[0],
+      catId: 'cat_' + cat,
+      emoji: l.emoji || '🔗'
+    });
+    netEdges.push({ from: 'cat_' + cat, to: 'link_' + l.id });
+  });
+
+  function getNode(id) { return netNodes.find(n=>n.id===id); }
+
+  function applyForces() {
+    // Repulsion
+    for (let a = 0; a < netNodes.length; a++) {
+      for (let b = a+1; b < netNodes.length; b++) {
+        const na = netNodes[a], nb = netNodes[b];
+        const dx = nb.x - na.x, dy = nb.y - na.y;
+        const dist = Math.sqrt(dx*dx+dy*dy) || 0.1;
+        const minDist = na.radius + nb.radius + 30;
+        if (dist < minDist) {
+          const f = (minDist - dist) / dist * 0.3;
+          na.vx -= dx*f; na.vy -= dy*f;
+          nb.vx += dx*f; nb.vy += dy*f;
+        }
+      }
+    }
+    // Attraction along edges
+    netEdges.forEach(e => {
+      const a = getNode(e.from), b = getNode(e.to);
+      if (!a||!b) return;
+      const dx = b.x-a.x, dy = b.y-a.y;
+      const dist = Math.sqrt(dx*dx+dy*dy)||0.1;
+      const target = a.radius + b.radius + 50;
+      const f = (dist - target) / dist * 0.05;
+      a.vx += dx*f; a.vy += dy*f;
+      b.vx -= dx*f; b.vy -= dy*f;
+    });
+    // Center gravity
+    netNodes.forEach(n => {
+      n.vx += (W/2 - n.x) * 0.003;
+      n.vy += (H/2 - n.y) * 0.003;
+      n.vx *= 0.85; n.vy *= 0.85;
+      n.x  += n.vx; n.y  += n.vy;
+      n.x = Math.max(n.radius+4, Math.min(W-n.radius-4, n.x));
+      n.y = Math.max(n.radius+4, Math.min(H-n.radius-4, n.y));
+    });
+  }
+
+  function draw() {
+    ctx.fillStyle = bgCol;
+    ctx.fillRect(0,0,W,H);
+
+    // Edges
+    netEdges.forEach(e => {
+      const a = getNode(e.from), b = getNode(e.to);
+      if (!a||!b) return;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = (netSelected && (e.from===netSelected||e.to===netSelected))
+        ? getNode(e.from).color + 'cc' : edgeCol;
+      ctx.lineWidth = (netSelected && (e.from===netSelected||e.to===netSelected)) ? 1.5 : 0.8;
+      ctx.stroke();
+    });
+
+    // Nodes
+    netNodes.forEach(n => {
+      const isHighlight = n.id === netSelected;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.radius, 0, Math.PI*2);
+      ctx.fillStyle = n.type==='cat'
+        ? (isHighlight ? n.color : n.color + '88')
+        : (isHighlight ? n.color : n.color + '55');
+      ctx.fill();
+      ctx.strokeStyle = isHighlight ? '#ffffff' : n.color;
+      ctx.lineWidth = isHighlight ? 2 : 1;
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = isLight ? '#2a3a1a' : (n.type==='cat' ? '#fff' : '#ccc');
+      ctx.font = n.type==='cat'
+        ? "bold 9px 'Share Tech Mono'"
+        : "8px 'Share Tech Mono'";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if (n.type === 'cat') {
+        ctx.fillText(n.label, n.x, n.y);
+        ctx.font = "8px 'Share Tech Mono'";
+        ctx.fillStyle = isLight ? '#5a7a2a' : '#88cc88';
+        ctx.fillText(n.count, n.x, n.y + 11);
+      } else {
+        ctx.fillText(n.emoji||'·', n.x, n.y);
+      }
+    });
+  }
+
+  function tick() {
+    applyForces();
+    draw();
+    netAnim = requestAnimationFrame(tick);
+  }
+  tick();
+
+  // Interaction
+  canvas.onclick = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left), my = (e.clientY - rect.top);
+    let found = null;
+    netNodes.forEach(n => {
+      const d = Math.sqrt((mx-n.x)**2+(my-n.y)**2);
+      if (d < n.radius + 5) found = n;
+    });
+    if (found) {
+      netSelected = (netSelected===found.id) ? null : found.id;
+      const info = document.getElementById('networkInfo');
+      if (netSelected) {
+        if (found.url) info.innerHTML = `<a href="${escH(found.url)}" target="_blank" style="color:var(--link)">${escH(found.fullLabel)}</a> — click en enlace para abrir`;
+        else info.textContent = `Categoría: ${found.fullLabel} · ${found.count} enlace${found.count!==1?'s':''}`;
+      } else {
+        info.textContent = '';
+      }
+    }
+  };
+}
+
+/* ============================================================
+   EXPORT / IMPORT
+   ============================================================ */
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  download(blob, `superlink72_${ts()}.json`);
+  showToast('✅ JSON exportado');
+}
+
+function exportTXT() {
+  const groups = {};
+  db.links.forEach(l => {
+    const cat = l.category || 'SIN CATEGORÍA';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(l);
+  });
+
+  let txt = `SUPERLINK72 — EXPORTACIÓN\n`;
+  txt += `Fecha: ${new Date().toLocaleString('es-AR')}\n`;
+  txt += `Total: ${db.links.length} enlaces\n`;
+  txt += '='.repeat(60) + '\n\n';
+
+  Object.entries(groups).forEach(([cat, links]) => {
+    txt += `[ ${cat.toUpperCase()} ]\n`;
+    txt += '-'.repeat(40) + '\n';
+    links.forEach(l => {
+      txt += `${l.emoji||'•'} ${l.name}\n`;
+      txt += `  URL: ${l.url}\n`;
+      if (l.description) txt += `  DESC: ${l.description}\n`;
+      if (l.tags && l.tags.length) txt += `  TAGS: ${l.tags.join(', ')}\n`;
+      if (l.sublinks && l.sublinks.length) {
+        l.sublinks.filter(s=>s.url).forEach(s => {
+          txt += `  ↳ ${s.label ? s.label+': ' : ''}${s.url}\n`;
+        });
+      }
+      txt += '\n';
+    });
+    txt += '\n';
+  });
+
+  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+  download(blob, `superlink72_${ts()}.txt`);
+  showToast('✅ TXT exportado');
+}
+
+function exportMarkdown() {
+  const groups = {};
+  db.links.forEach(l => {
+    const cat = l.category || 'SIN CATEGORÍA';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(l);
+  });
+
+  let md = `# SUPERLINK72\n\n`;
+  md += `> Exportado: ${new Date().toLocaleString('es-AR')} — ${db.links.length} enlaces\n\n`;
+
+  Object.entries(groups).forEach(([cat, links]) => {
+    md += `## ${cat}\n\n`;
+    links.forEach(l => {
+      md += `### ${l.emoji||'🔗'} [${l.name}](${l.url})\n`;
+      if (l.description) md += `${l.description}\n\n`;
+      if (l.tags && l.tags.length) md += `**Tags:** ${l.tags.map(t=>`\`${t}\``).join(', ')}\n\n`;
+      if (l.sublinks && l.sublinks.length) {
+        md += '**Sublinks:**\n';
+        l.sublinks.filter(s=>s.url).forEach(s => {
+          md += `- ${s.label ? `**${s.label}**: ` : ''}[${s.url}](${s.url})\n`;
+        });
+        md += '\n';
+      }
+    });
+  });
+
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  download(blob, `superlink72_${ts()}.md`);
+  showToast('✅ Markdown exportado');
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.links || !Array.isArray(imported.links)) {
+        showToast('Formato inválido', 'error'); return;
+      }
+      if (!confirm(`Importar ${imported.links.length} enlaces y ${(imported.categories||[]).length} categorías? Los datos actuales se fusionarán.`)) return;
+      // merge
+      imported.links.forEach(l => {
+        if (!db.links.find(ex=>ex.id===l.id)) db.links.push(l);
+      });
+      (imported.categories||[]).forEach(c => {
+        if (!db.categories.includes(c)) db.categories.push(c);
+      });
+      saveDB();
+      renderLinks();
+      showToast(`✅ Importados ${imported.links.length} enlaces`);
+    } catch(ex) {
+      showToast('Error al leer el archivo: ' + ex.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function confirmClearAll() {
+  if (prompt('Escribí BORRAR para confirmar la eliminación de todos los datos:') !== 'BORRAR') return;
+  db = { links: [], categories: [], version: 2 };
+  saveDB();
+  renderLinks();
+  showToast('Todos los datos fueron eliminados', 'warn');
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function openAddModal() {
+  editingId = null;
+  sublinksTemp = [];
+  buildForm('modalFormContainer', null);
+  document.getElementById('modalTitle').textContent = 'NUEVO ENLACE';
+  openModal('addModal');
+}
+
+// Close modal clicking outside
+document.getElementById('addModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('addModal');
+});
+
+/* ============================================================
+   DRAG & DROP import
+   ============================================================ */
+const importDrop = document.getElementById('importDrop');
+importDrop.addEventListener('dragover', e => { e.preventDefault(); importDrop.classList.add('drag-over'); });
+importDrop.addEventListener('dragleave', () => importDrop.classList.remove('drag-over'));
+importDrop.addEventListener('drop', e => {
+  e.preventDefault();
+  importDrop.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const fakeEvent = { target: { files: [file], value: '' } };
+    importJSON(fakeEvent);
+  }
+});
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' '+type : '');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function ts()    { return new Date().toISOString().slice(0,10); }
+
+function escH(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escA(s) {
+  if (!s) return '';
+  return String(s).replace(/'/g,"\\'");
+}
+
+function download(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ============================================================
+   RESIZE handler for network
+   ============================================================ */
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (activeTab === 'network') renderNetwork();
+  }, 200);
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+loadDB();
+loadTheme();
+renderLinks();
+updateHeader();
+
+// Demo data for first run
+if (db.links.length === 0 && db.categories.length === 0) {
+  db.categories = ['TECNOLOGÍA','NOTICIAS','CIENCIA','REFERENCIA'];
+  db.links = [
+    {
+      id: genId(), emoji: '📰', name: 'THE GUARDIAN',
+      url: 'https://www.theguardian.com',
+      category: 'NOTICIAS',
+      description: 'Diario internacional de referencia. Periodismo independiente.',
+      tags: ['PERIODISMO','ENGLISH'],
+      sublinks: [
+        { label: 'TECNOLOGÍA', url: 'https://www.theguardian.com/technology' },
+        { label: 'CIENCIA',    url: 'https://www.theguardian.com/science' }
+      ],
+      created: Date.now() - 86400000*5
+    },
+    {
+      id: genId(), emoji: '🔬', name: 'ARXIV',
+      url: 'https://arxiv.org',
+      category: 'CIENCIA',
+      description: 'Repositorio de preprints científicos en física, matemáticas, CS y más.',
+      tags: ['PAPERS','OPEN ACCESS'],
+      sublinks: [
+        { label: 'IA / ML', url: 'https://arxiv.org/list/cs.AI/recent' }
+      ],
+      created: Date.now() - 86400000*3
+    },
+    {
+      id: genId(), emoji: '💻', name: 'MDN WEB DOCS',
+      url: 'https://developer.mozilla.org',
+      category: 'TECNOLOGÍA',
+      description: 'Documentación web oficial de Mozilla. HTML, CSS, JS.',
+      tags: ['DOCS','WEB','DEV'],
+      sublinks: [],
+      created: Date.now() - 86400000
+    }
+  ];
+  db.supercats = [
+    { id: genId(), name: 'CONOCIMIENTO', emoji: '🧠', cats: ['CIENCIA','TECNOLOGÍA'] },
+    { id: genId(), name: 'ACTUALIDAD',   emoji: '🌐', cats: ['NOTICIAS'] }
+  ];
+  saveDB();
+  renderLinks();
+  updateHeader();
+  setTimeout(() => showToast('👋 Bienvenido a SUPERLINK72. Se cargaron datos de ejemplo.'), 800);
+}
+</script>
+</body>
+</html>
