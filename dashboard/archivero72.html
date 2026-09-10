@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVERO72</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+
+  * { box-sizing: border-box; margin:0; padding:0; }
+
+  :root {
+    --neon-verde:#00ff88;
+    --neon-fuccia:#ff2d9b;
+    --neon-amarillo:#f4e04d;
+    --neon-celeste:#00cfff;
+    --neon-naranja:#ff8c1a;
+  }
+
+  /* ---- TEMAS ---- */
+  body[data-theme="clasico"] {
+    --bg:#000818; --bg-grad:#000818;
+    --panel:#0000AA; --panel-alt:#5555ff;
+    --border:#5555ff; --border-strong:#ffffff;
+    --text:#e0e0e0; --text-dim:#a0a0ff;
+    --title-color:#ffffff; --title-glow:none;
+    --font-main:'Share Tech Mono', monospace;
+    --row-hover:#ffffff; --row-hover-text:#0000AA;
+  }
+  body[data-theme="neon"] {
+    --bg:#0a0a0a; --bg-grad:#0a0a0a;
+    --panel:#0f0f0f; --panel-alt:#141414;
+    --border:#1a3a2a; --border-strong:#ff2d9b;
+    --text:#d0d0d0; --text-dim:#888;
+    --title-color:#ff2d9b; --title-glow:0 0 8px #ff2d9b, 0 0 20px #ff2d9b, 0 0 40px rgba(255,45,155,0.35);
+    --font-main:'Share Tech Mono', monospace;
+    --row-hover:#161616; --row-hover-text:#ff2d9b;
+  }
+  body[data-theme="crt"] {
+    --bg:#040a06; --bg-grad:radial-gradient(ellipse at center, #08160c 0%, #020604 100%);
+    --panel:rgba(0,20,10,0.55); --panel-alt:rgba(0,30,15,0.5);
+    --border:#1a3320; --border-strong:#00ff88;
+    --text:#8fffb0; --text-dim:#4a8a5f;
+    --title-color:#8fffb0; --title-glow:0 0 10px #00ff88, 0 0 22px #00ff88;
+    --font-main:'VT323', monospace;
+    --row-hover:rgba(0,255,140,0.08); --row-hover-text:#ffffff;
+  }
+  body[data-theme="claro"] {
+    --bg:#f4f1ea; --bg-grad:#f4f1ea;
+    --panel:#ffffff; --panel-alt:#ececec;
+    --border:#cfcac0; --border-strong:#555;
+    --text:#222; --text-dim:#777;
+    --title-color:#333; --title-glow:none;
+    --font-main:'Share Tech Mono', monospace;
+    --row-hover:#eee; --row-hover-text:#000;
+  }
+
+  body {
+    background:var(--bg-grad);
+    color:var(--text);
+    font-family:var(--font-main);
+    min-height:100vh;
+    padding:22px;
+    transition:background 0.2s, color 0.2s;
+  }
+
+  .scanlines {
+    position:fixed; inset:0; pointer-events:none; z-index:999;
+    opacity:0;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+  }
+  body[data-theme="crt"] .scanlines { opacity:1; }
+
+  .wrap { max-width:980px; margin:0 auto; }
+
+  header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
+  h1 {
+    font-size:34px; letter-spacing:6px; color:var(--title-color);
+    text-shadow:var(--title-glow);
+  }
+  .theme-switch { display:flex; gap:6px; flex-wrap:wrap; }
+  .theme-switch button {
+    background:transparent; border:1px solid var(--border); color:var(--text-dim);
+    font-family:'Share Tech Mono', monospace; font-size:11px; letter-spacing:1px;
+    padding:6px 12px; cursor:pointer; border-radius:3px;
+  }
+  .theme-switch button.active { color:var(--title-color); border-color:var(--border-strong); }
+
+  .sub { color:var(--text-dim); font-size:13px; letter-spacing:2px; margin-bottom:20px; }
+
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
+  .toolbar button {
+    background:transparent; border:1px solid var(--border); color:var(--text);
+    font-family:'Share Tech Mono', monospace; font-size:12px; letter-spacing:1px;
+    padding:8px 16px; cursor:pointer; border-radius:3px;
+  }
+  .toolbar button:hover { border-color:var(--border-strong); }
+
+  .search-bar { display:flex; gap:8px; margin-bottom:18px; }
+  .search-bar input {
+    flex:1; background:var(--panel); border:1px solid var(--border); color:var(--text);
+    font-family:'Share Tech Mono',monospace; padding:9px 12px; font-size:13px; border-radius:3px;
+  }
+  .search-bar input:focus { outline:none; border-color:var(--border-strong); }
+  .search-bar button {
+    background:transparent; border:1px solid var(--border); color:var(--text-dim);
+    font-family:'Share Tech Mono',monospace; font-size:12px; padding:8px 14px; cursor:pointer; border-radius:3px;
+  }
+  .search-bar button:hover { border-color:var(--border-strong); color:var(--text); }
+  .no-results { padding:20px 30px; text-align:center; color:var(--text-dim); font-size:14px; font-style:italic; }
+
+  .categories { border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+  .cat-block { border-bottom:1px solid var(--border); }
+  .cat-block:last-child { border-bottom:none; }
+  .cat-header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 16px; cursor:pointer; background:var(--panel-alt);
+    font-size:16px; letter-spacing:1px;
+  }
+  .cat-header .name::before { content:"▸ "; }
+  .cat-header.open .name::before { content:"▾ "; }
+  .cat-header .meta { display:flex; align-items:center; gap:12px; }
+  .cat-header .count { font-size:12px; color:var(--text-dim); }
+  .cat-header .reorder-btn { font-size:12px; color:var(--text-dim); background:none; border:none; cursor:pointer; padding:0 3px; }
+  .cat-header .reorder-btn:hover:not(:disabled) { color:var(--title-color); }
+  .cat-header .reorder-btn:disabled { opacity:0.25; cursor:default; }
+  .cat-header .del-cat { font-size:14px; color:var(--neon-fuccia); background:none; border:none; cursor:pointer; padding:0 4px; }
+
+  .links-list { display:none; background:var(--panel); }
+  .cat-block.open .links-list { display:block; }
+
+  .link-row {
+    display:flex; align-items:center; gap:10px;
+    padding:9px 16px 9px 30px; border-top:1px solid var(--border);
+    font-size:15px;
+  }
+  .link-row .tema { flex:1; color:var(--text); cursor:pointer; }
+  .link-row .tema:hover { color:var(--row-hover-text); text-decoration:underline; }
+  .link-row .autor { font-size:12px; color:var(--text-dim); width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .link-row .tags { display:flex; gap:5px; flex-wrap:wrap; }
+  .link-row .edit-link { font-size:13px; color:var(--text-dim); background:none; border:none; cursor:pointer; }
+  .link-row .edit-link:hover { color:var(--neon-celeste); }
+  .link-row .del-link { font-size:13px; color:var(--text-dim); background:none; border:none; cursor:pointer; }
+  .link-row .del-link:hover { color:var(--neon-fuccia); }
+  .tag.match { outline:2px solid var(--title-color); outline-offset:1px; }
+
+  .empty-msg { padding:14px 30px; font-size:14px; color:var(--text-dim); font-style:italic; }
+  .empty-cats { padding:30px; text-align:center; color:var(--text-dim); font-size:15px; }
+
+  .tag { font-family:'Share Tech Mono',monospace; font-size:10px; font-weight:bold; padding:2px 7px; border-radius:2px; }
+  .tag.verde { background:var(--neon-verde); color:#00250f; }
+  .tag.fuccia { background:var(--neon-fuccia); color:#330014; }
+  .tag.amarillo { background:var(--neon-amarillo); color:#332e00; }
+  .tag.celeste { background:var(--neon-celeste); color:#00303d; }
+  .tag.naranja { background:var(--neon-naranja); color:#331a00; }
+
+  /* ---- MODAL ---- */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.6);
+    display:flex; align-items:center; justify-content:center; z-index:1000;
+    padding:20px;
+  }
+  .modal-overlay.hidden { display:none; }
+  .modal-card {
+    background:var(--panel); border:1px solid var(--border-strong); border-radius:6px;
+    padding:22px 26px; max-width:460px; width:100%;
+  }
+  .modal-title { font-size:15px; letter-spacing:2px; color:var(--title-color); text-shadow:var(--title-glow); margin-bottom:16px; }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:11px; letter-spacing:2px; margin-bottom:5px; font-weight:bold; }
+  .field.f-tema label { color:var(--neon-fuccia); }
+  .field.f-autor label { color:var(--neon-amarillo); }
+  .field.f-obs label { color:var(--neon-celeste); }
+  .field.f-tag label { color:var(--neon-verde); }
+  .field.f-url label { color:var(--neon-naranja); }
+  .field input, .field select {
+    width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text);
+    font-family:'Share Tech Mono',monospace; padding:8px 10px; font-size:13px; border-radius:3px;
+  }
+  .field input:focus, .field select:focus { outline:none; border-color:var(--border-strong); }
+  .field small { display:block; margin-top:4px; color:var(--text-dim); font-size:11px; }
+  .modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+  .modal-actions button {
+    background:transparent; border:1px solid var(--border); color:var(--text);
+    font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px;
+    padding:8px 16px; cursor:pointer; border-radius:3px;
+  }
+  .modal-actions button.primary { border-color:var(--border-strong); color:var(--title-color); }
+  .modal-actions button.danger { border-color:var(--neon-fuccia); color:var(--neon-fuccia); margin-right:auto; }
+  .err { color:var(--neon-fuccia); font-size:12px; margin-top:6px; display:none; }
+  .err.show { display:block; }
+
+  .statusbar { margin-top:16px; display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); flex-wrap:wrap; gap:8px; }
+
+  input[type=file] { display:none; }
+
+  @media (max-width:600px) {
+    .link-row { flex-wrap:wrap; }
+    .link-row .autor { width:100%; order:3; }
+  }
+</style>
+</head>
+<body data-theme="crt">
+<div class="scanlines"></div>
+<div class="wrap">
+  <header>
+    <h1>ARCHIVERO72</h1>
+    <div class="theme-switch" id="themeSwitch">
+      <button data-theme="clasico">Clásico</button>
+      <button data-theme="neon">Neón</button>
+      <button data-theme="crt" class="active">CRT</button>
+      <button data-theme="claro">Claro</button>
+    </div>
+  </header>
+  <div class="sub">// repositorio personal de referencias</div>
+
+  <div class="toolbar">
+    <button id="btnNewCat">+ Nueva categoría</button>
+    <button id="btnNewLink">+ Nuevo link</button>
+    <button id="btnExport">⇩ Exportar backup</button>
+    <button id="btnImportTrigger">⇧ Importar backup</button>
+    <input type="file" id="fileImport" accept="application/json">
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Buscar por tag (también busca en tema y autor)...">
+    <button id="btnClearSearch" title="Limpiar búsqueda">✕</button>
+  </div>
+
+  <div class="categories" id="categoriesContainer"></div>
+
+  <div class="statusbar">
+    <span id="statTotals"></span>
+    <span>ARCHIVERO72 — datos guardados en este navegador (local storage)</span>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal-card" id="modalCard"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "archivero72_data_v1";
+  var THEME_KEY = "archivero72_theme_v1";
+  var TAG_COLORS = ["verde","fuccia","amarillo","celeste","naranja"];
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+  function seedData(){
+    return {
+      categories: [
+        {
+          id: uid(), name: "Noticias", open: true,
+          links: [
+            { id: uid(), url:"https://www.infobae.com",
+              tema:"Infobae — portada de noticias", autor:"Infobae",
+              observacion:"Ejemplo de link guardado. Podés editarlo o borrarlo cuando quieras.", tags:["noticias","ejemplo"] }
+          ]
+        }
+      ]
+    };
+  }
+
+  function loadData(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) { var seed = seedData(); saveData(seed); return seed; }
+      var parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.categories)) throw new Error("estructura inválida");
+      return parsed;
+    } catch(e){
+      var seed2 = seedData(); saveData(seed2); return seed2;
+    }
+  }
+
+  function saveData(data){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  var data = loadData();
+
+  function tagColorFor(tagText, index){
+    return TAG_COLORS[index % TAG_COLORS.length];
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  var searchTerm = "";
+
+  function linkMatches(link, term){
+    if (!term) return true;
+    var t = term.toLowerCase();
+    var inTags = (link.tags || []).some(function(tag){ return tag.toLowerCase().indexOf(t) !== -1; });
+    var inTema = (link.tema || "").toLowerCase().indexOf(t) !== -1;
+    var inAutor = (link.autor || "").toLowerCase().indexOf(t) !== -1;
+    return inTags || inTema || inAutor;
+  }
+
+  function render(){
+    var container = document.getElementById("categoriesContainer");
+    container.innerHTML = "";
+
+    var term = searchTerm.trim();
+    var filtering = term.length > 0;
+
+    if (data.categories.length === 0){
+      container.innerHTML = '<div class="empty-cats">Todavía no hay categorías. Creá la primera con "+ Nueva categoría".</div>';
+      document.getElementById("statTotals").textContent = "0 categorías · 0 links guardados";
+      return;
+    }
+
+    var anyMatch = false;
+
+    data.categories.forEach(function(cat, catIndex){
+      var visibleLinks = filtering ? cat.links.filter(function(l){ return linkMatches(l, term); }) : cat.links;
+      if (filtering && visibleLinks.length === 0) return;
+      if (filtering) anyMatch = true;
+
+      var isOpen = filtering ? true : cat.open;
+
+      var block = document.createElement("div");
+      block.className = "cat-block" + (isOpen ? " open" : "");
+
+      var header = document.createElement("div");
+      header.className = "cat-header" + (isOpen ? " open" : "");
+      header.innerHTML =
+        '<span class="name">' + escapeHtml(cat.name) + '</span>' +
+        '<span class="meta"><span class="count">[' + visibleLinks.length + (filtering ? '/' + cat.links.length : '') + ']</span>' +
+        '<button class="reorder-btn" data-move="up" title="Subir categoría"' + (catIndex === 0 ? ' disabled' : '') + '>▲</button>' +
+        '<button class="reorder-btn" data-move="down" title="Bajar categoría"' + (catIndex === data.categories.length - 1 ? ' disabled' : '') + '>▼</button>' +
+        '<button class="del-cat" title="Eliminar categoría" data-cat="' + cat.id + '">✕</button></span>';
+      header.addEventListener("click", function(e){
+        if (e.target.closest("button")) return;
+        cat.open = !cat.open;
+        saveData(data);
+        render();
+      });
+
+      var list = document.createElement("div");
+      list.className = "links-list";
+
+      if (visibleLinks.length === 0){
+        list.innerHTML = '<div class="empty-msg">Sin links guardados en esta categoría todavía.</div>';
+      } else {
+        visibleLinks.forEach(function(link){
+          var row = document.createElement("div");
+          row.className = "link-row";
+          var tagsHtml = (link.tags || []).map(function(t, i){
+            var isMatch = filtering && t.toLowerCase().indexOf(term.toLowerCase()) !== -1;
+            return '<span class="tag ' + tagColorFor(t,i) + (isMatch ? ' match' : '') + '">' + escapeHtml(t) + '</span>';
+          }).join("");
+          row.innerHTML =
+            '<span class="tema" title="' + escapeHtml(link.observacion || "") + '">' + escapeHtml(link.tema) + '</span>' +
+            '<span class="autor">' + escapeHtml(link.autor || "") + '</span>' +
+            '<span class="tags">' + tagsHtml + '</span>' +
+            '<button class="edit-link" title="Editar link" data-link="' + link.id + '">✎</button>' +
+            '<button class="del-link" title="Eliminar link" data-link="' + link.id + '">✕</button>';
+          row.querySelector(".tema").addEventListener("click", function(){
+            window.open(link.url, "_blank", "noopener");
+          });
+          row.querySelector(".edit-link").addEventListener("click", function(){
+            openEditLinkModal(cat, link);
+          });
+          row.querySelector(".del-link").addEventListener("click", function(){
+            if (confirm('¿Eliminar el link "' + link.tema + '"?')){
+              cat.links = cat.links.filter(function(l){ return l.id !== link.id; });
+              saveData(data);
+              render();
+            }
+          });
+          list.appendChild(row);
+        });
+      }
+
+      block.appendChild(header);
+      block.appendChild(list);
+      container.appendChild(block);
+
+      header.querySelector(".del-cat").addEventListener("click", function(){
+        if (confirm('¿Eliminar la categoría "' + cat.name + '" y todos sus links (' + cat.links.length + ')?')){
+          data.categories = data.categories.filter(function(c){ return c.id !== cat.id; });
+          saveData(data);
+          render();
+        }
+      });
+
+      var upBtn = header.querySelector('[data-move="up"]');
+      var downBtn = header.querySelector('[data-move="down"]');
+      upBtn.addEventListener("click", function(){ moveCategory(catIndex, -1); });
+      downBtn.addEventListener("click", function(){ moveCategory(catIndex, 1); });
+    });
+
+    if (filtering && !anyMatch){
+      container.innerHTML = '<div class="no-results">Sin resultados para "' + escapeHtml(term) + '".</div>';
+    }
+
+    var totalLinks = data.categories.reduce(function(sum,c){ return sum + c.links.length; }, 0);
+    document.getElementById("statTotals").textContent =
+      data.categories.length + " categorías · " + totalLinks + " links guardados";
+  }
+
+  function moveCategory(index, delta){
+    var target = index + delta;
+    if (target < 0 || target >= data.categories.length) return;
+    var arr = data.categories;
+    var tmp = arr[index];
+    arr[index] = arr[target];
+    arr[target] = tmp;
+    saveData(data);
+    render();
+  }
+
+  var searchInput = document.getElementById("searchInput");
+  searchInput.addEventListener("input", function(){
+    searchTerm = searchInput.value;
+    render();
+  });
+  document.getElementById("btnClearSearch").addEventListener("click", function(){
+    searchTerm = "";
+    searchInput.value = "";
+    render();
+  });
+
+  /* ---- MODALES ---- */
+  var overlay = document.getElementById("modalOverlay");
+  var modalCard = document.getElementById("modalCard");
+
+  function closeModal(){
+    overlay.classList.add("hidden");
+    modalCard.innerHTML = "";
+  }
+  overlay.addEventListener("click", function(e){
+    if (e.target === overlay) closeModal();
+  });
+
+  function openModal(html){
+    modalCard.innerHTML = html;
+    overlay.classList.remove("hidden");
+  }
+
+  function openNewCategoryModal(){
+    openModal(
+      '<div class="modal-title">◤ NUEVA CATEGORÍA ◢</div>' +
+      '<div class="field"><label>NOMBRE</label><input id="newCatName" placeholder="Ej: Ciencia, Historia, Tecnología"></div>' +
+      '<div class="err" id="catErr">Escribí un nombre para la categoría.</div>' +
+      '<div class="modal-actions">' +
+        '<button id="catCancel">Cancelar</button>' +
+        '<button id="catSave" class="primary">Guardar</button>' +
+      '</div>'
+    );
+    document.getElementById("catCancel").addEventListener("click", closeModal);
+    document.getElementById("catSave").addEventListener("click", function(){
+      var name = document.getElementById("newCatName").value.trim();
+      var err = document.getElementById("catErr");
+      if (!name){ err.classList.add("show"); return; }
+      data.categories.push({ id: uid(), name: name, open:true, links: [] });
+      saveData(data);
+      render();
+      closeModal();
+    });
+    document.getElementById("newCatName").addEventListener("input", function(){
+      document.getElementById("catErr").classList.remove("show");
+    });
+  }
+
+  function openNewLinkModalStep1(){
+    if (data.categories.length === 0){
+      alert("Primero creá al menos una categoría.");
+      return;
+    }
+    var options = data.categories.map(function(c){
+      return '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>';
+    }).join("");
+    openModal(
+      '<div class="modal-title">◤ NUEVO LINK — PASO 1/2 ◢</div>' +
+      '<div class="field f-tag"><label>CATEGORÍA</label><select id="linkCat">' + options + '</select></div>' +
+      '<div class="field f-url"><label>URL DEL LINK</label><input id="linkUrl" placeholder="https://..."></div>' +
+      '<div class="err" id="urlErr">Pegá una dirección web válida.</div>' +
+      '<div class="modal-actions">' +
+        '<button id="linkCancel1">Cancelar</button>' +
+        '<button id="linkNext" class="primary">Continuar</button>' +
+      '</div>'
+    );
+    document.getElementById("linkCancel1").addEventListener("click", closeModal);
+    document.getElementById("linkNext").addEventListener("click", function(){
+      var url = document.getElementById("linkUrl").value.trim();
+      var catId = document.getElementById("linkCat").value;
+      var err = document.getElementById("urlErr");
+      if (!/^https?:\/\/.+/i.test(url)){ err.classList.add("show"); return; }
+      openNewLinkModalStep2(catId, url);
+    });
+    document.getElementById("linkUrl").addEventListener("input", function(){
+      document.getElementById("urlErr").classList.remove("show");
+    });
+  }
+
+  function openNewLinkModalStep2(catId, url){
+    openModal(
+      '<div class="modal-title">◤ NUEVO LINK — PASO 2/2 ◢</div>' +
+      '<div class="field f-url"><label>URL</label><input value="' + escapeHtml(url) + '" disabled></div>' +
+      '<div class="field f-tema"><label>TEMA</label><input id="fTema" placeholder="Título con el que vas a identificar el link"></div>' +
+      '<div class="field f-autor"><label>AUTOR</label><input id="fAutor" placeholder="Opcional"></div>' +
+      '<div class="field f-obs"><label>OBSERVACIÓN</label><input id="fObs" placeholder="Opcional — nota personal"></div>' +
+      '<div class="field f-tag"><label>TAGS</label><input id="fTags" placeholder="separados por coma, ej: video, debate"></div>' +
+      '<div class="err" id="temaErr">El campo Tema es obligatorio.</div>' +
+      '<div class="modal-actions">' +
+        '<button id="linkBack">Volver</button>' +
+        '<button id="linkSave" class="primary">Guardar</button>' +
+      '</div>'
+    );
+    document.getElementById("linkBack").addEventListener("click", function(){
+      openNewLinkModalStep1();
+    });
+    document.getElementById("fTema").addEventListener("input", function(){
+      document.getElementById("temaErr").classList.remove("show");
+    });
+    document.getElementById("linkSave").addEventListener("click", function(){
+      var tema = document.getElementById("fTema").value.trim();
+      var err = document.getElementById("temaErr");
+      if (!tema){ err.classList.add("show"); return; }
+      var autor = document.getElementById("fAutor").value.trim();
+      var obs = document.getElementById("fObs").value.trim();
+      var tagsRaw = document.getElementById("fTags").value.trim();
+      var tags = tagsRaw ? tagsRaw.split(",").map(function(t){ return t.trim(); }).filter(Boolean) : [];
+
+      var cat = data.categories.find(function(c){ return c.id === catId; });
+      if (!cat){ closeModal(); return; }
+      cat.links.push({ id: uid(), url: url, tema: tema, autor: autor, observacion: obs, tags: tags });
+      cat.open = true;
+      saveData(data);
+      render();
+      closeModal();
+    });
+  }
+
+  function openEditLinkModal(cat, link){
+    var tagsValue = (link.tags || []).join(", ");
+    openModal(
+      '<div class="modal-title">◤ EDITAR LINK ◢</div>' +
+      '<div class="field f-url"><label>URL</label><input id="eUrl" value="' + escapeHtml(link.url) + '"></div>' +
+      '<div class="field f-tema"><label>TEMA</label><input id="eTema" value="' + escapeHtml(link.tema) + '"></div>' +
+      '<div class="field f-autor"><label>AUTOR</label><input id="eAutor" value="' + escapeHtml(link.autor || "") + '"></div>' +
+      '<div class="field f-obs"><label>OBSERVACIÓN</label><input id="eObs" value="' + escapeHtml(link.observacion || "") + '"></div>' +
+      '<div class="field f-tag"><label>TAGS</label><input id="eTags" value="' + escapeHtml(tagsValue) + '" placeholder="separados por coma"></div>' +
+      '<div class="err" id="eErr">La URL y el Tema son obligatorios.</div>' +
+      '<div class="modal-actions">' +
+        '<button id="eDelete" class="danger">Eliminar link</button>' +
+        '<button id="eCancel">Cancelar</button>' +
+        '<button id="eSave" class="primary">Guardar cambios</button>' +
+      '</div>'
+    );
+    document.getElementById("eCancel").addEventListener("click", closeModal);
+    document.getElementById("eDelete").addEventListener("click", function(){
+      if (confirm('¿Eliminar el link "' + link.tema + '"?')){
+        cat.links = cat.links.filter(function(l){ return l.id !== link.id; });
+        saveData(data);
+        render();
+        closeModal();
+      }
+    });
+    document.getElementById("eSave").addEventListener("click", function(){
+      var url = document.getElementById("eUrl").value.trim();
+      var tema = document.getElementById("eTema").value.trim();
+      var err = document.getElementById("eErr");
+      if (!tema || !/^https?:\/\/.+/i.test(url)){ err.classList.add("show"); return; }
+      link.url = url;
+      link.tema = tema;
+      link.autor = document.getElementById("eAutor").value.trim();
+      link.observacion = document.getElementById("eObs").value.trim();
+      var tagsRaw = document.getElementById("eTags").value.trim();
+      link.tags = tagsRaw ? tagsRaw.split(",").map(function(t){ return t.trim(); }).filter(Boolean) : [];
+      saveData(data);
+      render();
+      closeModal();
+    });
+    ["eUrl","eTema"].forEach(function(id){
+      document.getElementById(id).addEventListener("input", function(){
+        document.getElementById("eErr").classList.remove("show");
+      });
+    });
+  }
+
+  document.getElementById("btnNewCat").addEventListener("click", openNewCategoryModal);
+  document.getElementById("btnNewLink").addEventListener("click", openNewLinkModalStep1);
+
+  /* ---- EXPORT / IMPORT ---- */
+  document.getElementById("btnExport").addEventListener("click", function(){
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+    var a = document.createElement("a");
+    var d = new Date();
+    var stamp = d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0");
+    a.href = URL.createObjectURL(blob);
+    a.download = "archivero72-backup-" + stamp + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  });
+
+  var fileImport = document.getElementById("fileImport");
+  document.getElementById("btnImportTrigger").addEventListener("click", function(){
+    fileImport.value = "";
+    fileImport.click();
+  });
+  fileImport.addEventListener("change", function(){
+    var file = fileImport.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try {
+        var parsed = JSON.parse(reader.result);
+        if (!parsed || !Array.isArray(parsed.categories)) throw new Error("formato inválido");
+        if (confirm("Esto va a REEMPLAZAR todos los datos guardados actualmente por los del archivo importado. ¿Continuar?")){
+          data = parsed;
+          saveData(data);
+          render();
+        }
+      } catch(e){
+        alert("El archivo no tiene un formato válido de backup de ARCHIVERO72.");
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  /* ---- TEMAS ---- */
+  function applyTheme(theme){
+    document.body.setAttribute("data-theme", theme);
+    document.querySelectorAll("#themeSwitch button").forEach(function(btn){
+      btn.classList.toggle("active", btn.getAttribute("data-theme") === theme);
+    });
+    localStorage.setItem(THEME_KEY, theme);
+  }
+  document.querySelectorAll("#themeSwitch button").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      applyTheme(btn.getAttribute("data-theme"));
+    });
+  });
+  applyTheme(localStorage.getItem(THEME_KEY) || "crt");
+
+  render();
+})();
+</script>
+</body>
+</html>
