@@ -965,13 +965,69 @@
   </main>
 </div>
 
+<!-- ═══════════════ MODAL AGREGAR/EDITAR LINK ═══════════════ -->
+<div class="modal-overlay" id="link-modal" onclick="handleModalOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Agregar link</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- EMOJI -->
+    <div class="emoji-field">
+      <span class="emoji-label">Emoji</span>
+      <div class="emoji-row">
+        <div class="emoji-preview" id="emoji-preview" onclick="toggleEmojiGrid()">🔗</div>
+        <div style="flex:1">
+          <div style="font-size:.78rem;color:var(--text-muted);line-height:1.5">
+            Hacé clic en el emoji para elegir uno del panel,<br>o escribí uno directamente a continuación.
+          </div>
+          <input type="text" id="emoji-custom" placeholder="📌 escribí un emoji"
+            style="margin-top:.4rem;width:100%;padding:.4rem .7rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-alt);color:var(--text);font-size:1.1rem;outline:none;"
+            oninput="onCustomEmojiInput()" />
+        </div>
+      </div>
+      <div class="emoji-grid" id="emoji-grid">
+        <!-- Generado por JS -->
+      </div>
+    </div>
+
+    <!-- TÍTULO -->
+    <div class="field">
+      <label for="link-title">Título</label>
+      <input type="text" id="link-title" placeholder="Ej: Portal ANMAT" maxlength="60" />
+    </div>
+
+    <!-- URL -->
+    <div class="field">
+      <label for="link-url">URL</label>
+      <input type="url" id="link-url" placeholder="https://..." />
+    </div>
+
+    <!-- COLOR -->
+    <div class="field">
+      <label>Color de acento</label>
+      <div class="color-row" id="color-row">
+        <!-- Generado por JS -->
+      </div>
+    </div>
+
+    <div id="modal-error" style="font-size:.82rem;color:var(--danger);margin-top:.25rem;display:none;"></div>
+
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-modal-save" onclick="saveLink()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <script>
   /* ─── DATOS DE DASHBOARDS ─── */
   const DASHBOARDS = [
     {
-      id: "Repositorio de links",
+      id: "archivero72",
       title: "ARCHIVERO72",
-      dept: "OAP72,
+      dept: "OAP72",
       icon: "📋",
       iconBg: "#DBEAFE",
       owner: "OAP72",
@@ -981,10 +1037,10 @@
       badgeClass: "badge-blue",
       file: "desaborad/archivero72.html",
     },
-        {
-      id: "Repositorio de links",
+    {
+      id: "superlink72",
       title: "SUPERLINK",
-      dept: "OAP72,
+      dept: "OAP72",
       icon: "📋",
       iconBg: "#DBEAFE",
       owner: "OAP72",
@@ -994,10 +1050,10 @@
       badgeClass: "badge-blue",
       file: "desaborad/superlink72v1.html",
     },
-        {
-      id: "Repositorio de links",
+    {
+      id: "cinelink72",
       title: "CINELINK72",
-      dept: "OAP72,
+      dept: "OAP72",
       icon: "📋",
       iconBg: "#DBEAFE",
       owner: "OAP72",
@@ -1007,24 +1063,8 @@
       badgeClass: "badge-blue",
       file: "https://cinelink72.vercel.app/",
     },
-        {
-      id: "Repositorio de links",
-      title: "CINELINK72",
-      dept: "OAP72,
-      icon: "📋",
-      iconBg: "#DBEAFE",
-      owner: "OAP72",
-      initials: "OP",
-      avatarColor: "#2563EB",
-      badge: "OAP72",
-      badgeClass: "badge-blue",
-      file: "https://cinelink72.vercel.app/",
-    },
-    
     // ── AGREGAR NUEVAS TARJETAS AQUÍ ──
     // Recordá: el "id" tiene que ser ÚNICO para cada tarjeta.
-    // Si dos tarjetas comparten el mismo id, sólo se va a mostrar
-    // la última de ellas repetida en todas las posiciones.
     // {
     //   id: "ventas",
     //   title: "Dashboard de Ventas",
@@ -1054,8 +1094,8 @@
     try { order = JSON.parse(localStorage.getItem("adb_dash_order") || "null"); }
     catch { order = null; }
     if (!Array.isArray(order)) order = ids.slice();
-    ids.forEach(id => { if (!order.includes(id)) order.push(id); }); // nuevas tarjetas al final
-    order = order.filter(id => ids.includes(id)); // sacar ids que ya no existen
+    ids.forEach(id => { if (!order.includes(id)) order.push(id); });
+    order = order.filter(id => ids.includes(id));
     return order;
   }
   function saveDashOrder(order) {
@@ -1450,7 +1490,6 @@
         const imported = JSON.parse(ev.target.result);
         if (!Array.isArray(imported)) throw new Error();
         const valid = imported.filter(l => l.id && l.title && l.url);
-        // Merge: add only those not already present by id
         const existingIds = new Set(linksData.map(l => l.id));
         const newOnes = valid.filter(l => !existingIds.has(l.id));
         linksData = [...linksData, ...newOnes];
@@ -1465,66 +1504,9 @@
     reader.readAsText(file);
   }
 
-  /* ─── UPDATE renderCards to also load links ─── */
-  const _origRenderCards = renderCards;
-
+  /* ─── INIT ─── */
   initTheme();
 </script>
-<!-- ═══════════════ MODAL AGREGAR/EDITAR LINK ═══════════════ -->
-<div class="modal-overlay" id="link-modal" onclick="handleModalOverlayClick(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="modal-title">Agregar link</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-
-    <!-- EMOJI -->
-    <div class="emoji-field">
-      <span class="emoji-label">Emoji</span>
-      <div class="emoji-row">
-        <div class="emoji-preview" id="emoji-preview" onclick="toggleEmojiGrid()">🔗</div>
-        <div style="flex:1">
-          <div style="font-size:.78rem;color:var(--text-muted);line-height:1.5">
-            Hacé clic en el emoji para elegir uno del panel,<br>o escribí uno directamente a continuación.
-          </div>
-          <input type="text" id="emoji-custom" placeholder="📌 escribí un emoji"
-            style="margin-top:.4rem;width:100%;padding:.4rem .7rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-alt);color:var(--text);font-size:1.1rem;outline:none;"
-            oninput="onCustomEmojiInput()" />
-        </div>
-      </div>
-      <div class="emoji-grid" id="emoji-grid">
-        <!-- Generado por JS -->
-      </div>
-    </div>
-
-    <!-- TÍTULO -->
-    <div class="field">
-      <label for="link-title">Título</label>
-      <input type="text" id="link-title" placeholder="Ej: Portal ANMAT" maxlength="60" />
-    </div>
-
-    <!-- URL -->
-    <div class="field">
-      <label for="link-url">URL</label>
-      <input type="url" id="link-url" placeholder="https://..." />
-    </div>
-
-    <!-- COLOR -->
-    <div class="field">
-      <label>Color de acento</label>
-      <div class="color-row" id="color-row">
-        <!-- Generado por JS -->
-      </div>
-    </div>
-
-    <div id="modal-error" style="font-size:.82rem;color:var(--danger);margin-top:.25rem;display:none;"></div>
-
-    <div class="modal-footer">
-      <button class="btn-modal-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-modal-save" onclick="saveLink()">Guardar</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
