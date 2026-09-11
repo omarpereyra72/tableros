@@ -220,12 +220,74 @@
       margin-top: .3rem;
     }
 
+    /* VIEW TOGGLE (grilla / lineal) */
+    .view-toggle {
+      display: flex;
+      gap: .2rem;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .2rem;
+      flex-shrink: 0;
+    }
+    .view-toggle-btn {
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      width: 34px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .view-toggle-btn:hover { color: var(--text); }
+    .view-toggle-btn.active { background: var(--accent); color: #fff; }
+
     /* DASHBOARD GRID */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.25rem;
       margin-bottom: 3rem;
+    }
+
+    /* DASHBOARD GRID — VISTA LINEAL */
+    .dashboard-grid.view-list {
+      grid-template-columns: 1fr;
+      gap: .65rem;
+    }
+    .dashboard-grid.view-list .dash-card {
+      flex-direction: row;
+      align-items: center;
+      padding: .85rem 1.25rem;
+      gap: 1.25rem;
+    }
+    .dashboard-grid.view-list .dash-card-header {
+      flex: 0 0 auto;
+      gap: .75rem;
+    }
+    .dashboard-grid.view-list .dash-card-body {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+    .dashboard-grid.view-list .dash-card-dept { margin-top: 0; }
+    .dashboard-grid.view-list .dash-card-footer {
+      flex: 0 0 auto;
+      border-top: none;
+      padding-top: 0;
+      gap: 1rem;
+    }
+    @media (max-width: 640px) {
+      .dashboard-grid.view-list .dash-card { flex-wrap: wrap; }
+      .dashboard-grid.view-list .dash-card-footer { width: 100%; justify-content: space-between; }
     }
 
     /* DASHBOARD CARD */
@@ -331,6 +393,36 @@
       transition: opacity var(--transition);
     }
     .dash-card:hover .open-link-icon { opacity: 1; }
+
+    /* CONTROLES DE ORDEN (subir/bajar) */
+    .order-ctrls {
+      display: flex;
+      flex-direction: column;
+      gap: .15rem;
+      flex-shrink: 0;
+    }
+    .order-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 24px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .6rem;
+      line-height: 1;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .order-btn:hover:not(:disabled) {
+      background: var(--accent-light);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .order-btn:disabled { opacity: .3; cursor: default; }
+    .links-grid .order-btn { width: 30px; height: 30px; font-size: .7rem; }
 
     /* SETTINGS PANEL */
     .settings-panel {
@@ -455,6 +547,36 @@
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 1rem;
       margin-bottom: 1rem;
+    }
+
+    /* LINKS GRID — VISTA LINEAL */
+    .links-grid.view-list {
+      grid-template-columns: 1fr;
+      gap: .6rem;
+    }
+    .links-grid.view-list .link-card {
+      flex-direction: row;
+      align-items: center;
+      padding: .75rem 1.1rem;
+      gap: 1rem;
+    }
+    .links-grid.view-list .link-card::before {
+      top: 0; bottom: 0; left: 0; right: auto;
+      width: 3px; height: auto;
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+    .links-grid.view-list .link-card-top {
+      flex: 1;
+      min-width: 0;
+    }
+    .links-grid.view-list .link-card-footer {
+      flex: 0 0 auto;
+      width: auto;
+    }
+    .links-grid.view-list .link-open-btn { flex: 0 0 auto; }
+    @media (max-width: 640px) {
+      .links-grid.view-list .link-card { flex-wrap: wrap; }
+      .links-grid.view-list .link-card-footer { width: 100%; justify-content: space-between; }
     }
     .link-card {
       background: var(--surface);
@@ -762,9 +884,15 @@
   <main class="main-content">
 
     <!-- SECTION: DASHBOARDS -->
-    <div class="section-header">
-      <h1>Panel de Dashboards</h1>
-      <p>Seleccioná un dashboard para abrirlo en una nueva pestaña.</p>
+    <div class="section-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <h1>Panel de Dashboards</h1>
+        <p>Seleccioná un dashboard para abrirlo en una nueva pestaña.</p>
+      </div>
+      <div class="view-toggle" id="dash-view-toggle">
+        <button class="view-toggle-btn" id="dash-view-grid-btn" onclick="setDashView('grid')" title="Vista en grilla">▦</button>
+        <button class="view-toggle-btn" id="dash-view-list-btn" onclick="setDashView('list')" title="Vista lineal">☰</button>
+      </div>
     </div>
 
     <div class="dashboard-grid" id="dashboard-grid">
@@ -780,6 +908,10 @@
         <p>Guardá y accedé rápidamente a tus enlaces de interés.</p>
       </div>
       <div class="links-actions">
+        <div class="view-toggle" id="links-view-toggle">
+          <button class="view-toggle-btn" id="links-view-grid-btn" onclick="setLinksView('grid')" title="Vista en grilla">▦</button>
+          <button class="view-toggle-btn" id="links-view-list-btn" onclick="setLinksView('list')" title="Vista lineal">☰</button>
+        </div>
         <button class="btn-links-secondary" onclick="exportLinks()" title="Exportar links como JSON">
           ⬇ Exportar
         </button>
@@ -837,111 +969,135 @@
   /* ─── DATOS DE DASHBOARDS ─── */
   const DASHBOARDS = [
     {
-      id: "Archivo de Links",
-      title: "ARCHIVERO72",
-      dept: "Gestión de links",
+      id: "calidad-dashboard",
+      title: "Dashboard de Calidad",
+      dept: "Gestión de Calidad · BPD",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Omar Pereyra",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "dashboard/archivero72.html",
+      file: "desaborad/calidad.html",
     },
-        {
-      id: "Archivo de Links",
-      title: "SUPERLINK",
-      dept: "Gestión de links",
+
+    {
+      id: "calidad-sharepoint",
+      title: "SharePoint de Calidad",
+      dept: "Gestión de Calidad · BPD",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Omar Pereyra",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "dashboard/superlink72v1.html",
+      file: "https://cofarsursacif.sharepoint.com/sites/Calidad/SitePages/CollabHome.aspx",
     },
-        {
-      id: "Geopolítica",
-      title: "AGENDA GEOPOLÍTICA",
-      dept: "Geopolítica",
+
+    {
+      id: "calidad-seguimiento-nc",
+      title: "Seguimiento de Reportes de No Conformidades",
+      dept: "Gestión de Calidad · BPD",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Omar Pereyra",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "https://agendageopolitica21.vercel.app/",
+      file: "https://cofarsursacif.sharepoint.com/:x:/s/Calidad/IQAhYTlXt7bLTo_LIxrU73tMAVXRxbcJJy__fQhnf4sGlr4?e=GdoJ1x",
     },
-        {
-      id: "Dieta",
-      title: "DIETA PLANA 5030 V2",
-      dept: "Salud",
+
+    {
+      id: "calidad-informes-mensuales",
+      title: "SGC Informes Mensuales",
+      dept: "Gestión de Calidad · BPD",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Omar Pereyra",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "https://dietaplana503020-eta.vercel.app/",
+      file: "https://cofarsursacif-my.sharepoint.com/:f:/g/personal/omarpereyra_cofarsur_com/IgD8UWN5UlfNSJqK8KeV-fZfAb2lSyMvjSGaeOPUThzxN48?e=tlK9he",
     },
-        {
-      id: "Soteriología",
-      title: "REVISTA EL ARMINIANO",
-      dept: "Teología",
+
+    {
+      id: "calidad-auditoria-interna",
+      title: "Auditoría Interna Mensual de Calidad",
+      dept: "Gestión de Calidad · BPD",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Omar Pereyra",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "https://el-arminiano.vercel.app/",
+      file: "https://cofarsursacif.sharepoint.com/:x:/s/Calidad/IQDKsWYdd_gLSKaAQkUHlw-0AdbyE7aXsod0wSl7sJREY88?e=Ht0Y18",
     },
-        {
-      id: "Teología",
-      title: "BITACORA TEOLÓGICA",
-      dept: "Teología personal",
+
+    {
+      id: "calidad-norma-2069",
+      title: "Norma Anmat 2069:2018",
+      dept: "Gestión de Calidad · BPD",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Omar Pereyra",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "https://bitacorateologica.vercel.app/",
+      file: "https://alldashboards.vercel.app/dashboard/2069.html",
     },
-        {
-      id: "Salud",
-      title: "GLOMERULONEFRITIS POR IGA",
-      dept: "Salud Renal",
+
+    {
+      id: "stock-riesgo-vencimiento",
+      title: "Riesgo de Vencimiento",
+      dept: "Gestión de Stock",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Germán García",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "https://glomerulonefritis-iga.vercel.app/",
+      file: "dashboard/Riesgo_Vencimientos.html",
     },
-        {
-      id: "Salud",
-      title: "ANÁLISIS CLÍNICOS",
-      dept: "Salud Renal",
+
+    {
+      id: "rrhh-evaluacion-desempeno",
+      title: "Evaluación de Desempeño",
+      dept: "BPD",
       icon: "📋",
       iconBg: "#DBEAFE",
-      owner: "OAP72",
+      owner: "Omar Pereyra",
       initials: "OP",
       avatarColor: "#2563EB",
-      badge: "Herramienta",
+      badge: "Calidad",
       badgeClass: "badge-blue",
-      file: "https://analisisclinicos.vercel.app/",
+      file: "dashboard/evaluacion_desempeno.html",
     },
-  
+
+    {
+      id: "seguridad-gestion",
+      title: "Gestión de Seguridad",
+      dept: "BPD",
+      icon: "📋",
+      iconBg: "#DBEAFE",
+      owner: "Omar Pereyra",
+      initials: "OP",
+      avatarColor: "#2563EB",
+      badge: "Calidad",
+      badgeClass: "badge-blue",
+      file: "seguridad/seguridad.html",
+    },
+
     // ── AGREGAR NUEVAS TARJETAS AQUÍ ──
+    // Recordá: el "id" tiene que ser ÚNICO para cada tarjeta.
+    // Si dos tarjetas comparten el mismo id, sólo se va a mostrar
+    // la última de ellas repetida en todas las posiciones.
     // {
     //   id: "ventas",
     //   title: "Dashboard de Ventas",
@@ -964,17 +1120,47 @@
     return `${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`;
   }
 
+  /* ─── ORDEN PERSONALIZADO — DASHBOARDS ─── */
+  function getDashOrder() {
+    const ids = DASHBOARDS.map(d => d.id);
+    let order;
+    try { order = JSON.parse(localStorage.getItem("adb_dash_order") || "null"); }
+    catch { order = null; }
+    if (!Array.isArray(order)) order = ids.slice();
+    ids.forEach(id => { if (!order.includes(id)) order.push(id); }); // nuevas tarjetas al final
+    order = order.filter(id => ids.includes(id)); // sacar ids que ya no existen
+    return order;
+  }
+  function saveDashOrder(order) {
+    localStorage.setItem("adb_dash_order", JSON.stringify(order));
+  }
+  function getOrderedDashboards() {
+    const order = getDashOrder();
+    const map = new Map(DASHBOARDS.map(d => [d.id, d]));
+    return order.map(id => map.get(id)).filter(Boolean);
+  }
+  function moveDash(id, dir) {
+    const order = getDashOrder();
+    const idx = order.indexOf(id);
+    const swapWith = dir === "up" ? idx - 1 : idx + 1;
+    if (idx < 0 || swapWith < 0 || swapWith >= order.length) return;
+    [order[idx], order[swapWith]] = [order[swapWith], order[idx]];
+    saveDashOrder(order);
+    renderCards();
+  }
+
   /* ─── RENDER CARDS ─── */
   function renderCards() {
     const grid = document.getElementById("dashboard-grid");
     const monthYear = getCurrentMonthYear();
-    grid.innerHTML = DASHBOARDS.map(d => `
+    const ordered = getOrderedDashboards();
+    grid.innerHTML = ordered.map((d, idx) => `
       <a class="dash-card" href="${d.file}" target="_blank" rel="noopener">
         <div class="dash-card-header">
           <div class="dash-card-icon" style="background:${d.iconBg}">${d.icon}</div>
           <span class="badge ${d.badgeClass}">${d.badge}</span>
         </div>
-        <div>
+        <div class="dash-card-body">
           <div class="dash-card-title">${d.title}</div>
           <div class="dash-card-dept">${d.dept}</div>
         </div>
@@ -984,10 +1170,46 @@
             <span class="dash-card-owner-name">${d.owner}</span>
           </div>
           <span class="dash-card-date">${monthYear}</span>
+          <div class="order-ctrls" onclick="event.preventDefault(); event.stopPropagation();">
+            <button class="order-btn" onclick="moveDash('${d.id}','up')" ${idx === 0 ? "disabled" : ""} title="Mover arriba">▲</button>
+            <button class="order-btn" onclick="moveDash('${d.id}','down')" ${idx === ordered.length - 1 ? "disabled" : ""} title="Mover abajo">▼</button>
+          </div>
           <span class="open-link-icon">↗</span>
         </div>
       </a>
     `).join("");
+  }
+
+  /* ─── VISTA (grilla / lineal) — DASHBOARDS ─── */
+  function getDashView() {
+    return localStorage.getItem("adb_dash_view") || "list";
+  }
+  function setDashView(view) {
+    localStorage.setItem("adb_dash_view", view);
+    applyDashView();
+  }
+  function applyDashView() {
+    const view = getDashView();
+    const grid = document.getElementById("dashboard-grid");
+    grid.classList.toggle("view-list", view === "list");
+    document.getElementById("dash-view-grid-btn").classList.toggle("active", view === "grid");
+    document.getElementById("dash-view-list-btn").classList.toggle("active", view === "list");
+  }
+
+  /* ─── VISTA (grilla / lineal) — LINKS ─── */
+  function getLinksView() {
+    return localStorage.getItem("adb_links_view") || "list";
+  }
+  function setLinksView(view) {
+    localStorage.setItem("adb_links_view", view);
+    applyLinksView();
+  }
+  function applyLinksView() {
+    const view = getLinksView();
+    const grid = document.getElementById("links-grid");
+    grid.classList.toggle("view-list", view === "list");
+    document.getElementById("links-view-grid-btn").classList.toggle("active", view === "grid");
+    document.getElementById("links-view-list-btn").classList.toggle("active", view === "list");
   }
 
   /* ─── AUTH ─── */
@@ -1009,8 +1231,10 @@
       document.getElementById("login-screen").style.display = "none";
       document.getElementById("app").style.display = "block";
       renderCards();
+      applyDashView();
       loadLinks();
       renderLinks();
+      applyLinksView();
     } else {
       document.getElementById("login-error").style.display = "block";
     }
@@ -1059,7 +1283,7 @@
 
   /* ─── THEME ─── */
   function initTheme() {
-    const saved = localStorage.getItem("adb_theme") || "light";
+    const saved = localStorage.getItem("adb_theme") || "dark";
     document.documentElement.setAttribute("data-theme", saved);
     updateThemeBtn(saved);
   }
@@ -1120,7 +1344,7 @@
         </div>`;
       return;
     }
-    grid.innerHTML = linksData.map(l => {
+    grid.innerHTML = linksData.map((l, idx) => {
       const safeTitle = escHtml(l.title);
       const safeUrl   = escHtml(l.url);
       const dispUrl   = l.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
@@ -1138,12 +1362,25 @@
             Abrir ↗
           </a>
           <div class="link-card-controls">
+            <div class="order-ctrls">
+              <button class="order-btn" onclick="moveLink('${l.id}','up')" ${idx === 0 ? "disabled" : ""} title="Mover arriba">▲</button>
+              <button class="order-btn" onclick="moveLink('${l.id}','down')" ${idx === linksData.length - 1 ? "disabled" : ""} title="Mover abajo">▼</button>
+            </div>
             <button class="link-ctrl-btn" onclick="editLink('${l.id}')" title="Editar">✏️</button>
             <button class="link-ctrl-btn del" onclick="deleteLink('${l.id}')" title="Eliminar">🗑️</button>
           </div>
         </div>
       </div>`;
     }).join("");
+  }
+
+  function moveLink(id, dir) {
+    const idx = linksData.findIndex(l => l.id === id);
+    const swapWith = dir === "up" ? idx - 1 : idx + 1;
+    if (idx < 0 || swapWith < 0 || swapWith >= linksData.length) return;
+    [linksData[idx], linksData[swapWith]] = [linksData[swapWith], linksData[idx]];
+    saveLinksStorage();
+    renderLinks();
   }
 
   function escHtml(s) {
