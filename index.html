@@ -339,18 +339,18 @@ body.dark  .login-btn:hover { color: #000000; }
   padding: 0;
   display: flex;
   align-items: stretch;
-  background: #c0c0c0;
+  background: #00aaaa;
   position: relative;
 }
-body.dark .header { background: #c0c0c0; border-bottom: 2px solid #ffffff; }
+body.dark .header { background: #00aaaa; border-bottom: 2px solid #ffffff; }
 
 .header-left-band {
-  background: #c0c0c0;
+  background: #00aaaa;
   padding: 8px 16px;
   display: flex;
   align-items: center;
   gap: 14px;
-  border-right: 1px solid #808080;
+  border-right: 1px solid #007777;
 }
 .header-day {
   font-family: var(--font-mono);
@@ -373,7 +373,7 @@ body.dark .header { background: #c0c0c0; border-bottom: 2px solid #ffffff; }
   padding: 10px 18px;
   display: flex;
   align-items: center;
-  background: #c0c0c0;
+  background: #00aaaa;
 }
 .header-greeting {
   font-family: var(--font-mono);
@@ -389,8 +389,8 @@ body.dark .header { background: #c0c0c0; border-bottom: 2px solid #ffffff; }
   flex-direction: column;
   justify-content: center;
   gap: 3px;
-  border-left: 1px solid #808080;
-  background: #c0c0c0;
+  border-left: 1px solid #007777;
+  background: #00aaaa;
 }
 .header-date {
   font-family: var(--font-mono);
@@ -421,10 +421,10 @@ body.dark .header { background: #c0c0c0; border-bottom: 2px solid #ffffff; }
   padding: 8px;
 }
 .header-btn {
-  background: #c0c0c0;
+  background: #00aaaa;
   border: 2px solid #ffffff;
-  border-right-color: #808080;
-  border-bottom-color: #808080;
+  border-right-color: #007777;
+  border-bottom-color: #007777;
   color: #000080;
   font-family: var(--font-mono);
   font-size: 14px;
@@ -442,6 +442,18 @@ body.dark .header { background: #c0c0c0; border-bottom: 2px solid #ffffff; }
   color: #000080;
   border-color: #ffffff;
 }
+
+
+/* ── PC + teclado animado ── */
+.header-pc{display:flex;align-items:center;gap:12px;padding:4px 14px;background:#00aaaa;border-left:1px solid #007777;}
+.pc-screen{width:190px;height:40px;background:#000000;border:2px solid #ffffff;border-right-color:#007777;border-bottom-color:#007777;box-shadow:0 0 0 2px #000088;padding:4px 6px;font-family:var(--font-mono);font-size:11px;font-weight:700;color:#55ff55;overflow:hidden;white-space:nowrap;display:flex;align-items:center;}
+.pc-cursor{color:#ffff55;animation:pcBlink .7s steps(1) infinite;margin-left:1px;}
+@keyframes pcBlink{50%{opacity:0}}
+.pc-kbd{display:grid;grid-template-columns:repeat(13,9px);grid-auto-rows:8px;gap:2px;background:#000088;padding:3px;border:2px solid #ffffff;border-right-color:#007777;border-bottom-color:#007777;}
+.pc-key{background:#c0c0c0;border-bottom:2px solid #606060;transition:background .05s,transform .05s;}
+.pc-key.space{grid-column:span 7;}
+.pc-key.pressed{background:#ffff55;border-bottom-width:0;transform:translateY(2px);}
+@media (max-width:900px){.header-pc{display:none;}}
 
 /* ════════════════════════════════════════
    LAYOUT
@@ -1219,7 +1231,7 @@ body.dark  .json-tools { background: #0a0a0a; }
       </div>
 
       <div class="login-hint">
-        Por defecto: <strong>admin</strong> / <strong>ies21</strong>
+        Por defecto: <strong>admin</strong> / <strong>Exito27</strong>
       </div>
     </div>
   </div>
@@ -1238,6 +1250,10 @@ body.dark  .json-tools { background: #0a0a0a; }
     </div>
     <div class="header-center">
       <span class="header-greeting" id="hdr-greeting">—</span>
+    </div>
+    <div class="header-pc" aria-hidden="true">
+      <div class="pc-screen"><span id="pc-typed"></span><span class="pc-cursor">█</span></div>
+      <div class="pc-kbd" id="pcKbd"></div>
     </div>
     <div class="header-right">
       <div class="header-user" id="hdr-user">— @ —</div>
@@ -1474,7 +1490,7 @@ body.dark  .json-tools { background: #0a0a0a; }
 const AUTH_KEY = 'bbs_auth_v1';
 const SESSION_KEY = 'bbs_session_v1';
 const DEFAULT_USER = 'admin';
-const DEFAULT_PASS = 'ies21';
+const DEFAULT_PASS = 'Exito27';
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
 
 /* SHA-256 usando Web Crypto API */
@@ -1752,27 +1768,7 @@ function loadSites() {
     const raw = localStorage.getItem(SITES_KEY);
     if (raw) { sites = JSON.parse(raw); return; }
   } catch(e) {}
-  sites = [
-    { id:'s1',  name:'Hacemos Teología',    icon:'✝️', url:'https://hacemos-teologia.vercel.app/', cat:'Teología y fe' },
-    { id:'s2',  name:'Vida Cristiana',      icon:'✝️', url:'https://vidacristiana.vercel.app/',    cat:'Teología y fe' },
-    { id:'s3',  name:'Mateo24',             icon:'✝️', url:'https://mateo24.vercel.app/',          cat:'Teología y fe' },
-    { id:'s4',  name:'Escatología',         icon:'✝️', url:'https://escatologia-alpha.vercel.app/',cat:'Teología y fe' },
-    { id:'s5',  name:'Arminianismo',        icon:'✝️', url:'https://arminianismo.vercel.app/',     cat:'Teología y fe' },
-    { id:'s6',  name:'Zona Soteriológica',  icon:'🔍', url:'https://zonasoteriologica.vercel.app/',cat:'Teología y fe' },
-    { id:'s7',  name:'Evangelio',           icon:'✨', url:'https://evangelio-orcin.vercel.app/',  cat:'Teología y fe' },
-    { id:'s8',  name:'24 Virtudes Cristianas', icon:'🌿', url:'https://24virtudes-cristianas.vercel.app/', cat:'Teología y fe' },
-    { id:'s9',  name:'Amigos epicúreos',    icon:'📖', url:'https://amigos-epicureos.vercel.app/', cat:'Teología y fe' },
-    { id:'s10', name:'Blue Letter Bible',   icon:'📕', url:'https://www.blueletterbible.org/',     cat:'Teología y fe' },
-    { id:'s11', name:'Blog de Bernabé',     icon:'🖊️', url:'https://www.elblogdebernabe.com/',     cat:'Teología y fe' },
-    { id:'s12', name:'Mi Blog',             icon:'✍️', url:'https://omarpereyra72.blogspot.com',   cat:'Mis blogs' },
-    { id:'s13', name:'Actualidad 72',       icon:'📡', url:'https://actualidad72.blogspot.com/',   cat:'Mis blogs' },
-    { id:'s14', name:'Linktree',            icon:'🌳', url:'https://linktr.ee/omarpereyra72',      cat:'Mis blogs' },
-    { id:'s15', name:'Diariamente en Cristo',icon:'📖', url:'https://ficm.org.mx/index.php#devocional', cat:'Devocionales' },
-    { id:'s16', name:'Esperanza Diaria',    icon:'📖', url:'https://www.pastorrick.com/es/current-teaching', cat:'Devocionales' },
-    { id:'s17', name:'Un Milagro cada día', icon:'📖', url:'https://es.jesus.net/devocional-diario', cat:'Devocionales' },
-    { id:'s18', name:'Daily in Christ',     icon:'📖', url:'https://www.crosswalk.com/devotionals/dailyinchrist/', cat:'Devocionales' },
-    { id:'s19', name:'Dieta 50/30/20',      icon:'🥗', url:'https://dietaplana503020.vercel.app/', cat:'Salud' },
-  ];
+  sites = [];
   saveSites();
 }
 
@@ -1810,7 +1806,7 @@ function renderSites() {
       </a>`;
     });
   });
-  container.innerHTML = html || '<div class="empty-state">sin sitios</div>';
+  container.innerHTML = html || '<div class="empty-state">sin sitios — agregá el primero con el botón +</div>';
 }
 
 function toggleAddSite() {
@@ -1894,24 +1890,7 @@ function loadApps() {
     const raw = localStorage.getItem(APPS_KEY);
     if (raw) { apps = JSON.parse(raw); return; }
   } catch(e) {}
-  apps = [
-    { id:'a1',  name:'Radios',              icon:'📻', url:'https://script.google.com/macros/s/AKfycbx0mw_gwVh9ioKbDtZu5h3GO9Rp9jUU37PrTdNTBWYdy2Vsmh0C4LRZC9alR4p1aIH3/exec', cat:'Utilidades' },
-    { id:'a2',  name:'DiariamenteEnCristo', icon:'✝️', url:'https://docs.google.com/spreadsheets/d/1XdJhkxFYjVAyfUM6BoCG01ObwLhy9_9x2Wv5HX64pvA/edit?gid=0#gid=0', cat:'Utilidades' },
-    { id:'a3',  name:'Chanchito72',         icon:'🐷', url:'https://chanchito72.vercel.app/', cat:'Utilidades' },
-    { id:'a4',  name:'Viejitos',            icon:'🧓', url:'https://script.google.com/macros/s/AKfycby5oi84R1h_Lit3rX64HRun7sJDlLAPiW19RclIEfnV15JxT9Tvv1sopgyu1e2MYlWH/exec', cat:'Utilidades' },
-    { id:'a5',  name:'Noticias',            icon:'📰', url:'https://script.google.com/macros/s/AKfycbwuYZg1RGLsVS0AdlQyQl7onbestX_at-KTcpWU4fcqoeD0uq4IM5FH1YuATDUdxEEU8g/exec', cat:'Utilidades' },
-    { id:'a6',  name:'Clima',               icon:'🌤', url:'https://mwood77.github.io/ws4kp-international/?latLonQuery=C%C3%B3rdoba%2C+C%C3%B3rdoba%2C+Argentina&latLon=%7B%22lat%22%3A+-31.4135%2C+%22lon%22%3A+-64.1811%7D', cat:'Utilidades' },
-    { id:'a7',  name:'Gmail',               icon:'✉',  url:'https://mail.google.com', cat:'Google' },
-    { id:'a8',  name:'Drive',               icon:'⏺️', url:'https://drive.google.com', cat:'Google' },
-    { id:'a9',  name:'Calendar',            icon:'🗓️', url:'https://calendar.google.com', cat:'Google' },
-    { id:'a10', name:'Calendar TeamUp',     icon:'📅', url:'https://teamup.com/ksfqegbo7cppbe8hiu', cat:'Google' },
-    { id:'a11', name:'Claude AI',           icon:'🤖', url:'https://claude.ai', cat:'IA' },
-    { id:'a12', name:'ChatGPT',             icon:'🤖', url:'https://chatgpt.com/', cat:'IA' },
-    { id:'a13', name:'X (Twitter)',         icon:'🔹', url:'https://x.com/home', cat:'Social' },
-    { id:'a14', name:'BIBLOVIDA',           icon:'📙', url:'https://script.google.com/macros/s/AKfycbx8HUuw2zFGb6U1vZJglFoRgNHS4AFHyl-tfwK5kDLYBeChfe3RmaauAqj-34S4gTY/exec', cat:'Utilidades' },
-    { id:'a15', name:'Reddit',              icon:'🌐', url:'https://www.reddit.com/', cat:'Social' },
-    { id:'a16', name:'Github',              icon:'🌐', url:'https://github.com/', cat:'Dev' },
-  ];
+  apps = [];
   saveApps();
 }
 
@@ -1951,7 +1930,7 @@ function renderApps() {
     });
     html += `</div>`;
   });
-  container.innerHTML = html || '<div class="empty-state">sin apps</div>';
+  container.innerHTML = html || '<div class="empty-state">sin apps — agregá la primera con el botón +</div>';
 }
 
 function toggleAddApp() {
@@ -2077,7 +2056,7 @@ async function resetAll() {
   document.getElementById('json-status').textContent = '— datos reseteados —';
   toast('todo reseteado — re-login');
   setTimeout(() => {
-    alert('Datos reseteados. Usuario/clave por defecto: admin / ies21');
+    alert('Datos reseteados. Usuario/clave por defecto: admin / Exito27');
     doLogout();
   }, 800);
 }
@@ -2232,6 +2211,38 @@ setInterval(updateBBSClock, 1000);
     document.getElementById('loginScreen').classList.remove('hidden');
     setTimeout(() => document.getElementById('login-user').focus(), 150);
   }
+})();
+
+/* ════════ PC / TECLADO ANIMADO ════════ */
+(function(){
+  const kbd=document.getElementById('pcKbd'), out=document.getElementById('pc-typed');
+  if(!kbd||!out) return;
+  const layout=[13,13,13,0]; // 3 filas de teclas + fila de barra espaciadora
+  const keys=[];
+  layout.forEach((n,r)=>{
+    if(r<3){ for(let i=0;i<n;i++){const k=document.createElement('div');k.className='pc-key';kbd.appendChild(k);keys.push(k);} }
+    else { const pad=document.createElement('div');pad.style.gridColumn='span 3';kbd.appendChild(pad);
+           const sp=document.createElement('div');sp.className='pc-key space';kbd.appendChild(sp);keys.push(sp); }
+  });
+  const space=keys[keys.length-1];
+  const phrases=['https://mis-links.com','https://mi-blog.net','https://drive.google.com','https://mi-sitio.app'];
+  let pi=0, ci=0, erasing=false;
+  function press(k){ k.classList.add('pressed'); setTimeout(()=>k.classList.remove('pressed'),90); }
+  function tick(){
+    const ph=phrases[pi];
+    if(!erasing){
+      if(ci<ph.length){
+        const ch=ph[ci++];
+        out.textContent=ph.slice(0,ci);
+        press(ch===' '?space:keys[Math.floor(Math.random()*(keys.length-1))]);
+        setTimeout(tick,90+Math.random()*110);
+      } else { erasing=true; setTimeout(tick,1400); }
+    } else {
+      if(ci>0){ ci--; out.textContent=ph.slice(0,ci); press(keys[Math.floor(Math.random()*(keys.length-1))]); setTimeout(tick,28); }
+      else { erasing=false; pi=(pi+1)%phrases.length; setTimeout(tick,400); }
+    }
+  }
+  tick();
 })();
 </script>
 </body>
