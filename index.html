@@ -505,48 +505,7 @@ body.dark .header { background: #00aaaa; border-bottom: 2px solid #ffffff; }
 }
 .block-title > span { flex: 1; }
 
-.verse-text {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.75;
-  border-left: 2px solid var(--border);
-  background: var(--surface2);
-  padding: 8px 10px;
-  margin-bottom: 8px;
-  font-style: normal;
-}
-body.light .verse-text { background: #000088; }
-body.dark  .verse-text { background: #0a0a0a; }
-
-.verse-ref {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--yellow);
-  text-align: right;
-  letter-spacing: 0.08em;
-  font-weight: 700;
-}
-.verse-nav { display: flex; gap: 4px; margin-top: 8px; }
-.verse-nav button {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 4px;
-  cursor: pointer;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: all var(--transition);
-}
-.verse-nav button:hover {
-  background: var(--link-hover-bg);
-  color: #000000;
-  border-color: var(--border2);
-}
+body.dark  
 
 .sites-group-label {
   font-family: var(--font-mono);
@@ -1208,6 +1167,21 @@ body.dark  .json-tools { background: #0a0a0a; }
 .add-site-form select,.modal-box select{width:100%;background:#000000;border:1px solid var(--border);border-bottom:2px solid var(--yellow);color:var(--yellow);font-family:var(--font-mono);font-size:10px;padding:4px 6px;margin-bottom:5px;outline:none;}
 .modal-box select{background:#000088;border-color:#ffffff;border-bottom-color:#ffff55;color:#ffff55;font-size:11px;}
 .add-site-form select option,.modal-box select option{background:#000000;color:#ffff55;}
+
+/* ── Banner de alerta meteorológica ── */
+#wxAlertBanner{background:#cc0000;color:#ffffff;border-bottom:3px solid #ffff55;padding:8px 14px;font-family:var(--font-mono);font-weight:700;align-items:center;gap:16px;position:relative;z-index:50;}
+#wxAlertBanner .wxa-head{display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
+#wxAlertBanner .wxa-title{color:#ffff55;font-size:13px;letter-spacing:.14em;text-transform:uppercase;animation:wxaBlink 1.2s steps(1) infinite;}
+#wxAlertBanner .wxa-src{font-size:9px;color:#ffcccc;letter-spacing:.06em;}
+#wxAlertBanner .wxa-items{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+#wxAlertBanner .wxa-item{display:flex;align-items:center;gap:10px;background:#880000;border:1px solid #ffaaaa;padding:4px 12px 4px 8px;}
+#wxAlertBanner .wxa-ico{font-size:34px;line-height:1;animation:wxaPulse 1.4s ease-in-out infinite;}
+#wxAlertBanner .wxa-name{font-size:13px;text-transform:uppercase;letter-spacing:.06em;}
+#wxAlertBanner .wxa-detail{font-size:11px;color:#ffdddd;}
+#wxAlertBanner .wxa-close{background:#880000;border:1px solid #ffffff;color:#ffffff;font-family:var(--font-mono);font-weight:700;width:28px;height:28px;cursor:pointer;flex-shrink:0;}
+#wxAlertBanner .wxa-close:hover{background:#ffff55;color:#cc0000;}
+@keyframes wxaBlink{50%{opacity:.35}}
+@keyframes wxaPulse{50%{transform:scale(1.14)}}
 </style>
 </head>
 <body class="light" id="bodyEl">
@@ -1253,6 +1227,9 @@ body.dark  .json-tools { background: #0a0a0a; }
   </div>
 </div>
 
+<!-- BANNER DE ALERTA METEOROLÓGICA -->
+<div id="wxAlertBanner" role="alert" style="display:none;"></div>
+
 <!-- ════════════════════════════════════════
      DASHBOARD
 ════════════════════════════════════════ -->
@@ -1286,16 +1263,6 @@ body.dark  .json-tools { background: #0a0a0a; }
 
   <!-- COL IZQ -->
   <div class="col-left" style="grid-row:2/4;display:flex;flex-direction:column;">
-    <div class="block">
-      <div class="block-title"><span>Palabra del día</span></div>
-      <div class="verse-text" id="verse-text">Cargando...</div>
-      <div class="verse-ref"  id="verse-ref"></div>
-      <div class="verse-nav">
-        <button onclick="prevVerse()">◂ anterior</button>
-        <button onclick="nextVerse()">siguiente ▸</button>
-      </div>
-    </div>
-
     <div class="block" style="flex:1;overflow-y:auto;">
       <div class="block-title">
         <span>Mis sitios</span>
@@ -1644,6 +1611,7 @@ function doLogout() {
   clearSession();
   document.getElementById('dashApp').style.display = 'none';
   document.getElementById('statusBar').style.display = 'none';
+  document.getElementById('wxAlertBanner').style.display = 'none';
   document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('login-user').value = '';
   document.getElementById('login-pass').value = '';
@@ -1759,27 +1727,6 @@ function updateClock() {
 }
 setInterval(updateClock, 10000);
 
-const VERSES = [
-  { text:"Confía en el SEÑOR con todo tu corazón, y no te apoyes en tu propia inteligencia.", ref:"Proverbios 3:5" },
-  { text:"El SEÑOR es mi pastor; nada me faltará.", ref:"Salmo 23:1" },
-  { text:"Todo lo puedo en Cristo que me fortalece.", ref:"Filipenses 4:13" },
-  { text:"Busca primeramente el reino de Dios y su justicia, y todo lo demás te será añadido.", ref:"Mateo 6:33" },
-  { text:"Porque yo sé los planes que tengo para vosotros, planes de bienestar y no de calamidad.", ref:"Jeremías 29:11" },
-  { text:"El SEÑOR es mi luz y mi salvación; ¿a quién temeré?", ref:"Salmo 27:1" },
-  { text:"Estad siempre gozosos. Orad sin cesar. Dad gracias en todo.", ref:"1 Tesalonicenses 5:16-18" },
-  { text:"Pero los que esperan en el SEÑOR renovarán sus fuerzas.", ref:"Isaías 40:31" },
-  { text:"Amarás al Señor tu Dios con todo tu corazón, y con toda tu alma, y con toda tu mente.", ref:"Mateo 22:37" },
-  { text:"En el principio era el Verbo, y el Verbo era con Dios, y el Verbo era Dios.", ref:"Juan 1:1" },
-  { text:"Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito.", ref:"Juan 3:16" },
-  { text:"La gracia del Señor Jesucristo sea con vuestro espíritu.", ref:"Filipenses 4:23" },
-];
-let vIdx = new Date().getDay() % VERSES.length;
-function showVerse() {
-  document.getElementById('verse-text').textContent = VERSES[vIdx].text;
-  document.getElementById('verse-ref').textContent  = '— ' + VERSES[vIdx].ref;
-}
-function nextVerse() { vIdx = (vIdx+1)%VERSES.length; showVerse(); }
-function prevVerse() { vIdx = (vIdx-1+VERSES.length)%VERSES.length; showVerse(); }
 
 let searchBase = 'https://google.com/search?q=';
 function setEngine(base, id) {
@@ -2141,7 +2088,90 @@ const WX_DESC = {
 const DIAS_CORTO = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 let wxLat = -31.4167, wxLon = -64.1833, wxCity = 'Córdoba, AR';
 
+
+/* ════════ ALERTAS METEOROLÓGICAS (según pronóstico de la ubicación del clima) ════════ */
+function evaluateWeatherAlerts(day) {
+  const labels = ['hoy', 'mañana'];
+  const found = {};
+  const add = (key, icon, title, detail, i) => {
+    if (!found[key]) found[key] = { icon, title, detail, days: [] };
+    found[key].days.push(labels[i]);
+  };
+  for (let i = 0; i < 2 && i < day.time.length; i++) {
+    const code  = day.weather_code[i];
+    const tmax  = day.temperature_2m_max[i], tmin = day.temperature_2m_min[i];
+    const app   = day.apparent_temperature_max ? day.apparent_temperature_max[i] : null;
+    const rain  = day.precipitation_sum ? day.precipitation_sum[i] : 0;
+    const gust  = day.wind_gusts_10m_max ? day.wind_gusts_10m_max[i] : 0;
+    const uv    = day.uv_index_max ? day.uv_index_max[i] : 0;
+    const snow  = day.snowfall_sum ? day.snowfall_sum[i] : 0;
+
+    if ([95, 96, 99].includes(code))
+      add('storm', '⛈️', (code === 96 || code === 99) ? 'Tormenta eléctrica con granizo' : 'Tormenta eléctrica', 'rayos y lluvia', i);
+    if (code === 65 || code === 82 || rain >= 30)
+      add('rain', '🌧️', 'Lluvias intensas', rain ? Math.round(rain) + ' mm previstos' : '', i);
+    if (tmax >= 38 || (app !== null && app >= 40))
+      add('heat', '🔥', 'Calor extremo', 'máx. ' + Math.round(tmax) + '°' + (app !== null ? ' · sensación ' + Math.round(app) + '°' : ''), i);
+    if (tmin <= -5)       add('cold', '🥶', 'Frío extremo', 'mín. ' + Math.round(tmin) + '°', i);
+    else if (tmin <= 0)   add('frost', '❄️', 'Heladas', 'mín. ' + Math.round(tmin) + '°', i);
+    if (gust >= 70)
+      add('wind', '💨', 'Vientos fuertes', 'ráfagas de ' + Math.round(gust) + ' km/h', i);
+    if ([71, 73, 75, 77, 85, 86].includes(code) || snow >= 2)
+      add('snow', '🌨️', 'Nevadas', snow ? Math.round(snow) + ' cm previstos' : '', i);
+    if (uv >= 11)
+      add('uv', '☀️', 'Radiación UV extrema', 'índice ' + Math.round(uv), i);
+  }
+  return Object.values(found).map(a => ({
+    icon: a.icon, title: a.title, detail: a.detail,
+    when: a.days.length === 2 ? 'hoy y mañana' : a.days[0]
+  }));
+}
+
+function renderAlertBanner(alerts) {
+  const el = document.getElementById('wxAlertBanner');
+  if (!el) return;
+  const dash = document.getElementById('dashApp');
+  const sig = alerts.map(a => a.title + a.when).join('|') + '@' + wxCity;
+  let dismissed = false;
+  try { dismissed = sessionStorage.getItem('bbs_alert_dismissed') === sig; } catch(_) {}
+  if (!alerts.length || dismissed || !dash || dash.style.display === 'none') {
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = `<div class="wxa-head">
+      <span class="wxa-title">⚠ Alerta meteorológica</span>
+      <span class="wxa-src">${escapeHtml(wxCity)} · según pronóstico</span>
+    </div>
+    <div class="wxa-items">` + alerts.map(a =>
+      `<div class="wxa-item"><span class="wxa-ico">${a.icon}</span>
+        <div><div class="wxa-name">${escapeHtml(a.title)} — ${escapeHtml(a.when)}</div>
+        ${a.detail ? `<div class="wxa-detail">${escapeHtml(a.detail)}</div>` : ''}</div></div>`).join('') +
+    `</div><button class="wxa-close" title="Ocultar alerta" aria-label="Ocultar alerta">✕</button>`;
+  el.querySelector('.wxa-close').onclick = () => {
+    try { sessionStorage.setItem('bbs_alert_dismissed', sig); } catch(_) {}
+    el.style.display = 'none';
+  };
+  el.style.display = 'flex';
+}
+
+async function loadWeatherAlerts() {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast`
+      + `?latitude=${wxLat}&longitude=${wxLon}`
+      + `&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,`
+      + `precipitation_sum,wind_gusts_10m_max,uv_index_max,snowfall_sum`
+      + `&timezone=auto&forecast_days=2`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    renderAlertBanner(evaluateWeatherAlerts(d.daily));
+  } catch(e) { /* sin conexión: se conserva el estado anterior del banner */ }
+}
+setInterval(loadWeatherAlerts, 30 * 60 * 1000);
+
 async function loadWeatherPanel() {
+  loadWeatherAlerts();
   const loading  = document.getElementById('wx-loading');
   const errEl    = document.getElementById('wx-error');
   const content  = document.getElementById('wx-content');
