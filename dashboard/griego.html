@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Griego Koiné — Nuevo Testamento</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --parch:    #130e07;
+  --parch2:   #1c160c;
+  --parch3:   #231b10;
+  --parch4:   #2e2315;
+  --gold:     #c9973a;
+  --gold-dim: #7a5a1e;
+  --ivory:    #e8dcc0;
+  --ivory-dim:#9a8c72;
+  --rust:     #8b3a2a;
+  --azure:    #3a6b8b;
+  --green:    #4a7a3a;
+  --border:   #3a2c18;
+  --serif:    'Noto Serif', Georgia, serif;
+  --display:  'IM Fell English SC', 'IM Fell English', Georgia, serif;
+  --sc:       'IM Fell English SC', Georgia, serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--parch);
+  color: var(--ivory);
+  font-family: var(--serif);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.4;
+}
+
+/* Greek decorative letter behind sidebar header */
+#sidebar-header::before {
+  content: 'Α';
+  position: absolute;
+  right: 16px; top: 8px;
+  font-family: var(--serif);
+  font-size: 72px;
+  color: var(--border);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* LAYOUT */
+#app { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+#sidebar {
+  width: 268px;
+  min-width: 268px;
+  background: var(--parch2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+#sidebar-header {
+  padding: 28px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+#sidebar-title {
+  font-family: var(--display);
+  color: var(--gold);
+  font-size: 15px;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+#sidebar-greek {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ivory-dim);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* PROGRESS */
+#progress-wrap {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+#progress-label { font-size: 10px; color: var(--ivory-dim); letter-spacing: 1px; margin-bottom: 6px; font-family: var(--sc); }
+#progress-bar-bg { background: var(--parch4); height: 3px; }
+#progress-bar-fill {
+  height: 100%;
+  background: var(--gold);
+  box-shadow: 0 0 6px rgba(201,151,58,0.4);
+  transition: width 0.6s ease;
+  width: 0%;
+}
+#progress-pct { font-size: 11px; color: var(--gold); margin-top: 4px; }
+
+/* NAV */
+#nav { flex: 1; padding: 8px 0; }
+
+.nav-module {
+  padding: 10px 20px 4px;
+  font-family: var(--sc);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 20px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ivory-dim);
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
+  font-family: var(--serif);
+}
+.nav-item:hover { color: var(--ivory); background: rgba(201,151,58,0.05); }
+.nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,151,58,0.08); }
+.nav-item.completed { color: var(--ivory-dim); }
+.nav-item.completed::after { content: ' ✓'; color: var(--green); font-size: 10px; }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+.nav-item.active .nav-dot { background: var(--gold); }
+
+/* TIMER */
+#session-timer { padding: 8px 20px; text-align: center; border-top: 1px solid var(--border); }
+#timer-label { font-size: 9px; color: var(--ivory-dim); letter-spacing: 1px; font-family: var(--sc); margin-bottom: 3px; }
+#timer-display { color: var(--gold); font-size: 13px; }
+
+/* SIDEBAR FOOTER */
+#sidebar-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-sm {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  color: var(--ivory-dim);
+  font-family: var(--sc);
+  font-size: 10px;
+  cursor: pointer;
+  background: transparent;
+  letter-spacing: 1px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+}
+.btn-sm:hover { border-color: var(--gold-dim); color: var(--ivory); }
+
+/* MAIN */
+#main {
+  flex: 1;
+  padding: 44px 52px 60px;
+  max-width: 840px;
+}
+
+/* SECTIONS */
+.section { display: none; }
+.section.active { display: block; }
+
+/* TYPOGRAPHY */
+.eyebrow {
+  font-family: var(--sc);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--ivory-dim);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+h1.page-title {
+  font-family: var(--display);
+  font-size: 32px;
+  color: var(--gold);
+  margin-bottom: 8px;
+  line-height: 1.2;
+  font-style: italic;
+}
+
+.greek-subtitle {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--ivory-dim);
+  font-style: italic;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+h2.lesson-h {
+  font-family: var(--display);
+  font-size: 18px;
+  color: var(--ivory);
+  margin: 36px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-style: italic;
+}
+
+h3.sub-h {
+  font-family: var(--sc);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin: 22px 0 10px;
+}
+
+p {
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: var(--ivory);
+  margin-bottom: 16px;
+  max-width: 68ch;
+}
+
+/* GREEK TEXT */
+.gk {
+  font-family: var(--serif);
+  color: var(--gold);
+  font-size: 1.05em;
+}
+
+.gk-large {
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--gold);
+  line-height: 1.5;
+}
+
+/* ILLUMINATED INITIAL */
+.drop-cap {
+  font-family: var(--display);
+  font-size: 54px;
+  color: var(--gold);
+  float: left;
+  line-height: 0.8;
+  margin-right: 8px;
+  margin-top: 8px;
+  text-shadow: 2px 2px 0 var(--border);
+}
+
+/* CARDS */
+.card {
+  background: var(--parch2);
+  border: 1px solid var(--border);
+  padding: 18px 22px;
+  margin-bottom: 18px;
+}
+.card.gold-border { border-color: var(--gold-dim); }
+.card.rust-border { border-color: var(--rust); }
+.card.green-border { border-color: var(--green); }
+.card.azure-border { border-color: var(--azure); }
+
+.card-label {
+  font-family: var(--sc);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ivory-dim);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* ALPHABET GRID */
+.alpha-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+  margin: 14px 0;
+}
+
+.alpha-cell {
+  background: var(--parch3);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.alpha-gk {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--gold);
+  display: block;
+  line-height: 1.3;
+}
+
+.alpha-name {
+  font-family: var(--sc);
+  font-size: 10px;
+  color: var(--ivory-dim);
+  letter-spacing: 1px;
+  display: block;
+  margin-top: 2px;
+}
+
+.alpha-sound {
+  font-size: 11px;
+  color: var(--ivory);
+  display: block;
+  margin-top: 1px;
+}
+
+/* TABLES */
+.gk-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 13.5px;
+}
+
+.gk-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-family: var(--sc);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ivory-dim);
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  font-weight: normal;
+}
+
+.gk-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(58,44,24,0.5);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.gk-table tr:last-child td { border-bottom: none; }
+.gk-table tr:hover td { background: rgba(201,151,58,0.04); }
+
+.td-gk { color: var(--gold); font-family: var(--serif); font-size: 15px; }
+.td-tr { color: var(--ivory); }
+.td-dim { color: var(--ivory-dim); font-size: 12px; }
+.td-note { color: var(--ivory-dim); font-size: 11px; font-style: italic; }
+
+/* PARADIGM GRID — declension/conjugation */
+.paradigm {
+  display: grid;
+  gap: 0;
+  margin: 14px 0;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.paradigm-2col { grid-template-columns: 1fr 1fr; }
+.paradigm-3col { grid-template-columns: 1fr 1fr 1fr; }
+.paradigm-4col { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+
+.para-cell {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  font-size: 13px;
+}
+.para-cell:last-child { border-right: none; }
+.para-cell.header {
+  background: var(--parch3);
+  font-family: var(--sc);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ivory-dim);
+  text-transform: uppercase;
+}
+.para-cell.case-label {
+  background: var(--parch3);
+  font-family: var(--sc);
+  font-size: 10px;
+  color: var(--ivory-dim);
+  letter-spacing: 1px;
+}
+.para-gk { color: var(--gold); font-family: var(--serif); font-size: 15px; }
+.para-tr { color: var(--ivory-dim); font-size: 11px; margin-top: 1px; }
+
+/* EXAMPLE BLOCK */
+.example {
+  background: rgba(201,151,58,0.05);
+  border-left: 2px solid var(--gold-dim);
+  padding: 12px 18px;
+  margin: 12px 0;
+  font-size: 13.5px;
+}
+.ex-gk { color: var(--gold); font-family: var(--serif); font-size: 15px; margin-bottom: 4px; }
+.ex-tr { color: var(--ivory-dim); font-size: 12px; font-style: italic; }
+.ex-es { color: var(--ivory); margin-top: 2px; }
+.ex-ref { color: var(--ivory-dim); font-size: 11px; margin-top: 4px; font-family: var(--sc); letter-spacing: 0.5px; }
+
+/* TIP */
+.tip {
+  display: flex;
+  gap: 12px;
+  background: rgba(74,122,58,0.08);
+  border-left: 2px solid var(--green);
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ivory);
+}
+.tip-icon { color: var(--green); flex-shrink: 0; font-size: 15px; }
+
+.warning {
+  display: flex;
+  gap: 12px;
+  background: rgba(139,58,42,0.08);
+  border-left: 2px solid var(--rust);
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ivory);
+}
+.warning-icon { color: var(--rust); flex-shrink: 0; }
+
+/* VERSE BLOCK */
+.verse {
+  background: var(--parch3);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  margin: 16px 0;
+  text-align: center;
+}
+.verse-gk {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--gold);
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+.verse-es { font-style: italic; color: var(--ivory-dim); font-size: 13px; }
+.verse-ref { font-family: var(--sc); font-size: 10px; color: var(--ivory-dim); letter-spacing: 1px; margin-top: 6px; }
+
+/* FORMULA */
+.formula {
+  border: 1px solid var(--gold-dim);
+  padding: 16px 22px;
+  margin: 16px 0;
+  text-align: center;
+  background: rgba(201,151,58,0.05);
+}
+.formula-label {
+  font-family: var(--sc);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ivory-dim);
+  margin-bottom: 8px;
+}
+.formula-content {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--gold);
+}
+
+/* TABS */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 9px 18px;
+  font-family: var(--sc);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--ivory-dim);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab:hover:not(.active) { color: var(--ivory); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* EXERCISES */
+.exercise-block {
+  background: var(--parch2);
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin: 24px 0;
+}
+.exercise-title {
+  font-family: var(--display);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.exercise-num-label {
+  font-family: var(--sc);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ivory-dim);
+  margin-bottom: 18px;
+}
+.exercise-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 13.5px;
+  flex-wrap: wrap;
+}
+.ex-num { color: var(--ivory-dim); font-size: 11px; min-width: 20px; padding-top: 4px; }
+.ex-q { color: var(--ivory); flex: 1; min-width: 200px; line-height: 1.6; padding-top: 2px; }
+.ex-q .gk { font-size: 15px; }
+.ex-input {
+  background: var(--parch);
+  border: 1px solid var(--border);
+  border-bottom-color: var(--gold-dim);
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: 14px;
+  padding: 5px 10px;
+  outline: none;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+.ex-input:focus { border-color: var(--gold); }
+.ex-input.correct { border-bottom-color: var(--green); color: #7bc97a; }
+.ex-input.wrong { border-bottom-color: var(--rust); color: #c9716a; }
+.fb-ok { color: var(--green); font-size: 11px; display: none; margin-left: 4px; }
+.fb-err { color: var(--rust); font-size: 11px; display: none; margin-left: 4px; }
+.fb-ok.show, .fb-err.show { display: inline; }
+
+.answer-reveal {
+  background: rgba(201,151,58,0.06);
+  border: 1px solid var(--gold-dim);
+  padding: 14px 18px;
+  margin-top: 12px;
+  font-size: 13px;
+  display: none;
+}
+.answer-reveal.show { display: block; }
+.ans-val { color: var(--gold); font-weight: bold; font-family: var(--serif); }
+
+.score-box {
+  font-family: var(--display);
+  font-size: 40px;
+  font-style: italic;
+  text-align: center;
+  padding: 18px;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  border: 1px solid;
+  font-family: var(--sc);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.2s;
+}
+.btn-gold { border-color: var(--gold-dim); color: var(--gold); }
+.btn-gold:hover { background: rgba(201,151,58,0.1); border-color: var(--gold); }
+.btn-ivory { border-color: var(--border); color: var(--ivory-dim); }
+.btn-ivory:hover { border-color: var(--ivory-dim); color: var(--ivory); }
+
+/* LESSON NAV */
+.lesson-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 52px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+/* ORNAMENT DIVIDER */
+.ornament {
+  text-align: center;
+  color: var(--gold-dim);
+  font-size: 18px;
+  margin: 28px 0;
+  letter-spacing: 8px;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--parch2);
+  border: 1px solid var(--gold-dim);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 36px;
+}
+.modal h2 {
+  font-family: var(--display);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+.modal .modal-greek { font-style: italic; color: var(--ivory-dim); font-size: 13px; margin-bottom: 20px; }
+.modal p, .modal li { font-size: 13px; line-height: 1.85; color: var(--ivory); margin-bottom: 10px; }
+.modal ul { padding-left: 18px; margin-bottom: 14px; }
+.modal li { margin-bottom: 6px; }
+
+/* HIDDEN */
+.hidden { display: none !important; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--parch); }
+::-webkit-scrollbar-thumb { background: var(--border); }
+
+@media (max-width: 768px) {
+  #sidebar { display: none; }
+  #main { padding: 20px 16px; }
+  .alpha-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+}
+</style>
+</head>
+<body>
+
+<!-- HELP MODAL -->
+<div class="modal-overlay" id="help-modal">
+  <div class="modal">
+    <h2>Cómo usar este curso</h2>
+    <div class="modal-greek">Ἡ ὁδὸς τῆς σοφίας — El camino de la sabiduría</div>
+
+    <p>Este curso introduce el griego koiné — la lengua común del mundo mediterráneo en el siglo I d.C., lengua original del Nuevo Testamento.</p>
+
+    <h3 style="font-family:var(--sc);font-size:10px;letter-spacing:2px;color:var(--gold);margin:14px 0 8px">Estructura del curso</h3>
+    <ul>
+      <li><span style="color:var(--gold)">Módulo 0</span> — Fundamentos: alfabeto, pronunciación, acento</li>
+      <li><span style="color:var(--gold)">Módulo A</span> — Sustantivos: casos, la 2.ª declinación (-ος)</li>
+      <li><span style="color:var(--gold)">Módulo B</span> — Verbos: presente activo (-ω) y el verbo εἰμί</li>
+      <li><span style="color:var(--gold)">Módulo C</span> — Vocabulario esencial del NT (palabras de alta frecuencia)</li>
+      <li><span style="color:var(--gold)">Examen final</span> — Evaluación integral</li>
+    </ul>
+
+    <h3 style="font-family:var(--sc);font-size:10px;letter-spacing:2px;color:var(--gold);margin:14px 0 8px">Pronunciación utilizada</h3>
+    <p>Este curso usa la pronunciación <strong style="color:var(--ivory)">erasmiana</strong> — la reconstrucción académica estándar del griego del siglo I, usada en seminarios y universidades. Cada letra se pronuncia de forma independiente.</p>
+
+    <h3 style="font-family:var(--sc);font-size:10px;letter-spacing:2px;color:var(--gold);margin:14px 0 8px">Exportar e importar progreso</h3>
+    <p>Tu progreso se guarda automáticamente en el navegador. Para llevarlo a otra computadora, usá los botones <strong style="color:var(--ivory)">Exportar</strong> e <strong style="color:var(--ivory)">Importar</strong> en la barra lateral.</p>
+
+    <div style="margin-top:20px">
+      <button class="btn btn-gold" onclick="closeHelp()">Comenzar el estudio</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div id="sidebar-header">
+    <div id="sidebar-title">Griego Koiné</div>
+    <div id="sidebar-greek">Ἑλληνιστική Κοινή — Nuevo Testamento</div>
+  </div>
+
+  <div id="progress-wrap">
+    <div id="progress-label">Progreso</div>
+    <div id="progress-bar-bg"><div id="progress-bar-fill"></div></div>
+    <div id="progress-pct">0% completado</div>
+  </div>
+
+  <div id="nav">
+    <div class="nav-module">Módulo 0 · Fundamentos</div>
+    <div class="nav-item" onclick="goTo('m0l0')" id="nav-m0l0"><span class="nav-dot"></span>M0·L0 — Introducción</div>
+    <div class="nav-item" onclick="goTo('m0l1')" id="nav-m0l1"><span class="nav-dot"></span>M0·L1 — El alfabeto griego</div>
+    <div class="nav-item" onclick="goTo('m0l2')" id="nav-m0l2"><span class="nav-dot"></span>M0·L2 — Vocales y diptongos</div>
+    <div class="nav-item" onclick="goTo('m0l3')" id="nav-m0l3"><span class="nav-dot"></span>M0·L3 — Acentos y espíritus</div>
+
+    <div class="nav-module">Módulo A · El sustantivo</div>
+    <div class="nav-item" onclick="goTo('mal1')" id="nav-mal1"><span class="nav-dot"></span>MA·L1 — Los casos griegos</div>
+    <div class="nav-item" onclick="goTo('mal2')" id="nav-mal2"><span class="nav-dot"></span>MA·L2 — 2.ª Declinación (-ος)</div>
+    <div class="nav-item" onclick="goTo('mal3')" id="nav-mal3"><span class="nav-dot"></span>MA·L3 — El artículo definido</div>
+
+    <div class="nav-module">Módulo B · El verbo</div>
+    <div class="nav-item" onclick="goTo('mbl1')" id="nav-mbl1"><span class="nav-dot"></span>MB·L1 — El verbo εἰμί (ser/estar)</div>
+    <div class="nav-item" onclick="goTo('mbl2')" id="nav-mbl2"><span class="nav-dot"></span>MB·L2 — Presente activo (-ω)</div>
+    <div class="nav-item" onclick="goTo('mbl3')" id="nav-mbl3"><span class="nav-dot"></span>MB·L3 — Negación y preguntas</div>
+
+    <div class="nav-module">Módulo C · Vocabulario</div>
+    <div class="nav-item" onclick="goTo('mcl1')" id="nav-mcl1"><span class="nav-dot"></span>MC·L1 — Sustantivos esenciales</div>
+    <div class="nav-item" onclick="goTo('mcl2')" id="nav-mcl2"><span class="nav-dot"></span>MC·L2 — Verbos esenciales del NT</div>
+    <div class="nav-item" onclick="goTo('mcl3')" id="nav-mcl3"><span class="nav-dot"></span>MC·L3 — Lectura del NT</div>
+
+    <div class="nav-module">Evaluación</div>
+    <div class="nav-item" onclick="goTo('exam')" id="nav-exam"><span class="nav-dot"></span>Examen final</div>
+  </div>
+
+  <div id="session-timer">
+    <div id="timer-label">Sesión de hoy</div>
+    <div id="timer-display">00:00</div>
+  </div>
+
+  <div id="sidebar-footer">
+    <button class="btn-sm" onclick="openHelp()">? Ayuda</button>
+    <button class="btn-sm" onclick="exportProgress()">↑ Exportar</button><br>
+    <label class="btn-sm" style="cursor:pointer">↓ Importar<input type="file" accept=".json" onchange="importProgress(event)" style="display:none"></label>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- ============================================================
+     M0 L0 — INTRODUCCIÓN
+     ============================================================ -->
+<div class="section active" id="section-m0l0">
+  <div class="eyebrow">Módulo 0 · Lección 0</div>
+  <h1 class="page-title">El idioma del Nuevo Testamento</h1>
+  <div class="greek-subtitle">Ἐν ἀρχῇ ἦν ὁ Λόγος — En el principio era el Verbo</div>
+
+  <p><span class="drop-cap">E</span>l griego <em>koiné</em> — literalmente «griego común» — fue la lengua franca del mundo mediterráneo entre los siglos IV a.C. y IV d.C. Es la lengua en que Pablo escribió sus cartas, en que Mateo, Lucas y Juan redactaron sus evangelios, y en que Juan recibió el Apocalipsis.</p>
+
+  <p>No es el griego clásico de Platón ni el griego moderno de Atenas. Es el griego del mercado, de la carta familiar, del edicto imperial — un idioma vivo y directo que cualquier habitante del Imperio Romano podía entender.</p>
+
+  <div class="verse">
+    <div class="verse-gk">Αὕτη ἐστὶν ἡ ἐντολὴ ἡ ἐμή,<br>ἵνα ἀγαπᾶτε ἀλλήλους</div>
+    <div class="verse-es">«Este es mi mandamiento: que os améis los unos a los otros»</div>
+    <div class="verse-ref">Juan 15:12</div>
+  </div>
+
+  <h2 class="lesson-h">¿Por qué aprender griego koiné?</h2>
+
+  <p>Las traducciones son interpretaciones. Cuando el apóstol Juan usa la palabra <span class="gk">ἀγάπη</span>, los traductores deben elegir entre «amor», «caridad» o «benevolencia» — y cada elección implica una interpretación teológica. Quien lee el texto griego ve la palabra tal como Juan la escribió.</p>
+
+  <div class="card gold-border">
+    <div class="card-label">El poder de leer el original</div>
+    <p style="margin:0;font-size:13.5px">La misma carta paulina que en español dice «justificados por la fe» usa en griego el término <span class="gk">δικαιοσύνη</span> — que contiene matices de justicia, rectitud y vindicación que ninguna traducción captura completamente. Este curso te da las herramientas para explorar esas capas.</p>
+  </div>
+
+  <h2 class="lesson-h">Cómo funciona este curso</h2>
+
+  <div class="card">
+    <div class="card-label">Rutina de 30 minutos diarios</div>
+    <table class="gk-table">
+      <tbody>
+        <tr><td class="td-dim" style="width:80px">5 min</td><td>Repaso de la lección anterior — releer paradigmas y ejemplos en voz alta</td></tr>
+        <tr><td class="td-dim">15 min</td><td>Lección nueva — leer, memorizar paradigmas, copiar las formas</td></tr>
+        <tr><td class="td-dim">10 min</td><td>Ejercicios sin mirar las respuestas primero</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">✦</span>
+    <span>El secreto del griego es la <strong>repetición activa</strong>. Copiá cada paradigma a mano al menos tres veces. El movimiento de la mano consolida la memoria de formas que no tienen paralelo en español.</span>
+  </div>
+
+  <div class="ornament">✦ · · ✦ · · ✦</div>
+
+  <div class="lesson-nav">
+    <div></div>
+    <button class="btn btn-gold" onclick="goTo('m0l1'); markDone('m0l0')">Siguiente lección →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     M0 L1 — ALFABETO
+     ============================================================ -->
+<div class="section" id="section-m0l1">
+  <div class="eyebrow">Módulo 0 · Lección 1</div>
+  <h1 class="page-title">El alfabeto griego</h1>
+  <div class="greek-subtitle">Τὸ ἀλφάβητον — 24 letras, pronunciación erasmiana</div>
+
+  <p>El griego usa su propio sistema de escritura — el alfabeto griego — de 24 letras. Muchas ya son familiares: α, β, δ, κ, μ, ν, π, τ son la base de letras científicas y fraternidades universitarias. La pronunciación que usamos es la <strong>erasmiana</strong>, reconstrucción académica del griego del siglo I.</p>
+
+  <div class="alpha-grid">
+    <!-- Mayúsculas y minúsculas, nombre, sonido -->
+    <div class="alpha-cell"><span class="alpha-gk">Αα</span><span class="alpha-name">Alfa</span><span class="alpha-sound">«a» como en «casa»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ββ</span><span class="alpha-name">Beta</span><span class="alpha-sound">«b» como en «bien»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Γγ</span><span class="alpha-name">Gamma</span><span class="alpha-sound">«g» como en «gato»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Δδ</span><span class="alpha-name">Delta</span><span class="alpha-sound">«d» como en «dar»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Εε</span><span class="alpha-name">Épsilon</span><span class="alpha-sound">«e» breve, como en «él»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ζζ</span><span class="alpha-name">Zeta</span><span class="alpha-sound">«dz» o «z» según región</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ηη</span><span class="alpha-name">Eta</span><span class="alpha-sound">«e» larga, como «ee»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Θθ</span><span class="alpha-name">Theta</span><span class="alpha-sound">«th» aspirada (ingés: <em>think</em>)</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ιι</span><span class="alpha-name">Iota</span><span class="alpha-sound">«i» como en «fin»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Κκ</span><span class="alpha-name">Kappa</span><span class="alpha-sound">«k» como en «kilo»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Λλ</span><span class="alpha-name">Lambda</span><span class="alpha-sound">«l» como en «luna»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Μμ</span><span class="alpha-name">Mu</span><span class="alpha-sound">«m» como en «madre»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Νν</span><span class="alpha-name">Nu</span><span class="alpha-sound">«n» como en «noche»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ξξ</span><span class="alpha-name">Xi</span><span class="alpha-sound">«ks» como en «éxito»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Οο</span><span class="alpha-name">Ómicron</span><span class="alpha-sound">«o» breve, como en «sol»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ππ</span><span class="alpha-name">Pi</span><span class="alpha-sound">«p» como en «pan»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ρρ</span><span class="alpha-name">Rho</span><span class="alpha-sound">«r» vibrante, como en «carro»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Σσ/ς</span><span class="alpha-name">Sigma</span><span class="alpha-sound">«s» — ς al final de palabra</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ττ</span><span class="alpha-name">Tau</span><span class="alpha-sound">«t» como en «tierra»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Υυ</span><span class="alpha-name">Ípsilon</span><span class="alpha-sound">«u» francesa o «ü» alemana</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Φφ</span><span class="alpha-name">Phi</span><span class="alpha-sound">«ph» aspirada, como «f» inglesa</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Χχ</span><span class="alpha-name">Ji/Chi</span><span class="alpha-sound">«kh» aspirada, como «j» española suave</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ψψ</span><span class="alpha-name">Psi</span><span class="alpha-sound">«ps» como en «psicología»</span></div>
+    <div class="alpha-cell"><span class="alpha-gk">Ωω</span><span class="alpha-name">Omega</span><span class="alpha-sound">«o» larga, como «oo»</span></div>
+  </div>
+
+  <div class="warning">
+    <span class="warning-icon">△</span>
+    <span>La <strong>sigma</strong> tiene dos formas: <span class="gk">σ</span> en el interior y principio de palabra, y <span class="gk">ς</span> al final. El NT usa ambas — por ejemplo: <span class="gk">λόγος</span> (palabra/razón), donde el σ final es ς.</span>
+  </div>
+
+  <h2 class="lesson-h">Letras que se parecen pero son distintas</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Griega</th><th>Parece a</th><th>Pero es</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">η</td><td class="td-tr">parece «n» española</td><td class="td-tr">es eta — «e» larga</td></tr>
+      <tr><td class="td-gk">ν</td><td class="td-tr">parece «v» latina</td><td class="td-tr">es nu — «n»</td></tr>
+      <tr><td class="td-gk">ρ</td><td class="td-tr">parece «p» latina</td><td class="td-tr">es rho — «r»</td></tr>
+      <tr><td class="td-gk">χ</td><td class="td-tr">parece «x» latina</td><td class="td-tr">es ji — «kh» aspirada</td></tr>
+      <tr><td class="td-gk">υ</td><td class="td-tr">parece «u» latina</td><td class="td-tr">es ípsilon — «ü»</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Ejercicio — Identificación del alfabeto</h2>
+
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 1 — Transcribir letras griegas</div>
+    <div class="exercise-num-label">Escribí el nombre de cada letra</div>
+    <div id="ex-m0l1-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('m0l1')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('m0l1')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('m0l1')">Reintentar</button>
+    </div>
+    <div id="ex-m0l1-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-m0l1-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('m0l0')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('m0l2'); markDone('m0l1')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     M0 L2 — VOCALES Y DIPTONGOS
+     ============================================================ -->
+<div class="section" id="section-m0l2">
+  <div class="eyebrow">Módulo 0 · Lección 2</div>
+  <h1 class="page-title">Vocales y diptongos</h1>
+  <div class="greek-subtitle">Τὰ φωνήεντα καὶ οἱ δίφθογγοι</div>
+
+  <p>El griego tiene 7 vocales — más que el español — distinguiendo entre vocales <strong>breves</strong> y <strong>largas</strong>. Esta distinción es fundamental para entender los paradigmas verbales y nominales.</p>
+
+  <h2 class="lesson-h">Las siete vocales</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Letra</th><th>Nombre</th><th>Duración</th><th>Sonido</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">α</td><td>alfa</td><td class="td-dim">breve o larga</td><td class="td-tr">«a» — la duración varía según contexto</td></tr>
+      <tr><td class="td-gk">ε</td><td>épsilon</td><td class="td-dim">siempre breve</td><td class="td-tr">«e» breve, como en «él»</td></tr>
+      <tr><td class="td-gk">η</td><td>eta</td><td class="td-dim">siempre larga</td><td class="td-tr">«ee» prolongada — el doble de épsilon</td></tr>
+      <tr><td class="td-gk">ι</td><td>iota</td><td class="td-dim">breve o larga</td><td class="td-tr">«i» — duración variable</td></tr>
+      <tr><td class="td-gk">ο</td><td>ómicron</td><td class="td-dim">siempre breve</td><td class="td-tr">«o» breve, como en «sol»</td></tr>
+      <tr><td class="td-gk">υ</td><td>ípsilon</td><td class="td-dim">breve o larga</td><td class="td-tr">«ü» francesa — duración variable</td></tr>
+      <tr><td class="td-gk">ω</td><td>omega</td><td class="td-dim">siempre larga</td><td class="td-tr">«oo» prolongada — el doble de ómicron</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <span class="tip-icon">✦</span>
+    <span>La regla más importante: <span class="gk">ε</span> = siempre breve, <span class="gk">η</span> = siempre larga; <span class="gk">ο</span> = siempre breve, <span class="gk">ω</span> = siempre larga. Esta regla aparece constantemente en los paradigmas.</span>
+  </div>
+
+  <h2 class="lesson-h">Diptongos principales</h2>
+
+  <p>Los diptongos son combinaciones de dos vocales pronunciadas como un solo sonido:</p>
+
+  <table class="gk-table">
+    <thead><tr><th>Diptongo</th><th>Pronunciación</th><th>Ejemplo del NT</th><th>Significado</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">αι</td><td class="td-tr">como «ai» en «aire»</td><td class="td-gk">αἰών</td><td class="td-tr">siglo / era / eternidad</td></tr>
+      <tr><td class="td-gk">αυ</td><td class="td-tr">como «au» en «autor»</td><td class="td-gk">αὐτός</td><td class="td-tr">él mismo / este</td></tr>
+      <tr><td class="td-gk">ει</td><td class="td-tr">como «ei» en «reina»</td><td class="td-gk">εἰρήνη</td><td class="td-tr">paz</td></tr>
+      <tr><td class="td-gk">οι</td><td class="td-tr">como «oi» en «oigo»</td><td class="td-gk">οἶκος</td><td class="td-tr">casa</td></tr>
+      <tr><td class="td-gk">ου</td><td class="td-tr">como «u» larga — «oo»</td><td class="td-gk">οὐρανός</td><td class="td-tr">cielo</td></tr>
+      <tr><td class="td-gk">υι</td><td class="td-tr">como «üi» (raro)</td><td class="td-gk">υἱός</td><td class="td-tr">hijo</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Iota suscrita</h2>
+
+  <p>En los diptongos largos (αι, ηι, ωι), cuando la iota sigue a una vocal larga se escribe <em>debajo</em> de ella: <span class="gk">ᾳ, ῃ, ῳ</span>. Esta iota suscrita es <strong>muda en la pronunciación erasmiana</strong> pero es gramaticalmente importante — la verás en ciertos casos nominales.</p>
+
+  <div class="example">
+    <div class="ex-gk">λόγῳ — τῷ — ἀγάπῃ</div>
+    <div class="ex-es">La ι debajo de la vocal indica el caso dativo</div>
+    <div class="ex-tr">(«a la palabra» — «al» — «al amor»)</div>
+  </div>
+
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 2 — Vocales y diptongos</div>
+    <div class="exercise-num-label">Identificá el sonido correcto</div>
+    <div id="ex-m0l2-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('m0l2')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('m0l2')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('m0l2')">Reintentar</button>
+    </div>
+    <div id="ex-m0l2-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-m0l2-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('m0l1')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('m0l3'); markDone('m0l2')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     M0 L3 — ACENTOS Y ESPÍRITUS
+     ============================================================ -->
+<div class="section" id="section-m0l3">
+  <div class="eyebrow">Módulo 0 · Lección 3</div>
+  <h1 class="page-title">Acentos y espíritus</h1>
+  <div class="greek-subtitle">Τόνοι καὶ πνεύματα</div>
+
+  <p>El griego escrito lleva dos clases de signos diacríticos: los <strong>acentos</strong> (que indican énfasis de altura tonal) y los <strong>espíritus</strong> (que indican si una vocal inicial lleva aspiración). Para leer el NT no necesitás dominarlos, pero sí reconocerlos.</p>
+
+  <h2 class="lesson-h">Los tres acentos</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Acento</th><th>Nombre</th><th>Ejemplo</th><th>Nota</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk" style="font-size:22px">ά</td><td class="td-tr">Agudo (acutus)</td><td class="td-gk">λόγος</td><td class="td-dim">Va en la vocal. Indica énfasis.</td></tr>
+      <tr><td class="td-gk" style="font-size:22px">ὰ</td><td class="td-tr">Grave (gravis)</td><td class="td-gk">καὶ</td><td class="td-dim">Solo en la última sílaba antes de otra palabra.</td></tr>
+      <tr><td class="td-gk" style="font-size:22px">ᾶ</td><td class="td-tr">Circunflejo (περισπωμένη)</td><td class="td-gk">πνεῦμα</td><td class="td-dim">Solo sobre vocales largas o diptongos.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Los dos espíritus</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Signo</th><th>Nombre</th><th>Pronunciación</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk" style="font-size:22px">ἀ</td><td class="td-tr">Espíritu suave (ψιλόν)</td><td class="td-tr">Vocal sin aspiración — se pronuncia normal</td><td class="td-gk">ἀγάπη</td></tr>
+      <tr><td class="td-gk" style="font-size:22px">ἁ</td><td class="td-tr">Espíritu áspero (δασύ)</td><td class="td-tr">«h» aspirada antes de la vocal</td><td class="td-gk">ἁμαρτία</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <span class="tip-icon">✦</span>
+    <span>Para el principiante: no te detengas en los acentos. Lo importante es reconocer las palabras. Los acentos se aprenden con la exposición continua al texto. Sí prestá atención al espíritu áspero porque indica una «h» inicial.</span>
+  </div>
+
+  <h2 class="lesson-h">Lectura práctica</h2>
+  <p>Con el alfabeto y los signos, ya podés intentar leer estas palabras del NT. Pronuncialas en voz alta:</p>
+
+  <table class="gk-table">
+    <thead><tr><th>Palabra</th><th>Transliteración</th><th>Significado</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">θεός</td><td class="td-tr">the-ós</td><td class="td-tr">Dios</td></tr>
+      <tr><td class="td-gk">κύριος</td><td class="td-tr">KÝ-ri-os</td><td class="td-tr">Señor</td></tr>
+      <tr><td class="td-gk">ἄνθρωπος</td><td class="td-tr">ÁN-thrō-pos</td><td class="td-tr">ser humano / hombre</td></tr>
+      <tr><td class="td-gk">Ἰησοῦς</td><td class="td-tr">I-ē-SOÛS</td><td class="td-tr">Jesús</td></tr>
+      <tr><td class="td-gk">Χριστός</td><td class="td-tr">Khris-TÓS</td><td class="td-tr">Cristo / Ungido</td></tr>
+      <tr><td class="td-gk">πνεῦμα</td><td class="td-tr">PNEÛ-ma</td><td class="td-tr">espíritu / aliento / viento</td></tr>
+      <tr><td class="td-gk">ἀγάπη</td><td class="td-tr">a-GÁ-pē</td><td class="td-tr">amor (el amor de Dios)</td></tr>
+      <tr><td class="td-gk">εὐαγγέλιον</td><td class="td-tr">eu-an-GÉ-li-on</td><td class="td-tr">buenas nuevas / evangelio</td></tr>
+    </tbody>
+  </table>
+
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 3 — Lectura y transliteración</div>
+    <div class="exercise-num-label">Escribí la transliteración al español</div>
+    <div id="ex-m0l3-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('m0l3')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('m0l3')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('m0l3')">Reintentar</button>
+    </div>
+    <div id="ex-m0l3-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-m0l3-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('m0l2')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mal1'); markDone('m0l3')">Módulo A →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MA L1 — LOS CASOS
+     ============================================================ -->
+<div class="section" id="section-mal1">
+  <div class="eyebrow">Módulo A · Lección 1</div>
+  <h1 class="page-title">Los casos griegos</h1>
+  <div class="greek-subtitle">Τὰ πτώματα — La función de las palabras en la oración</div>
+
+  <p>La diferencia más grande entre el griego y el español es que en griego la <strong>función gramatical de una palabra no depende de su posición en la oración, sino de su terminación</strong>. El griego tiene cinco casos — terminaciones que indican el papel de cada sustantivo.</p>
+
+  <p>En español decimos «Dios ama al hombre» y «el hombre ama a Dios» — el orden de las palabras cambia el significado. En griego, las terminaciones hacen ese trabajo: podés decir las palabras en cualquier orden y la oración conserva su significado.</p>
+
+  <h2 class="lesson-h">Los cinco casos y sus funciones</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Caso</th><th>Nombre griego</th><th>Función principal</th><th>Pregunta</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="td-tr" style="font-weight:600;color:var(--gold)">Nominativo</td>
+        <td class="td-gk">ὀνομαστική</td>
+        <td class="td-tr">Sujeto de la oración</td>
+        <td class="td-dim">¿Quién realiza la acción?</td>
+      </tr>
+      <tr>
+        <td class="td-tr" style="font-weight:600;color:var(--azure)">Genitivo</td>
+        <td class="td-gk">γενική</td>
+        <td class="td-tr">Posesión / relación («de»)</td>
+        <td class="td-dim">¿De quién? ¿De qué?</td>
+      </tr>
+      <tr>
+        <td class="td-tr" style="font-weight:600;color:var(--green)">Dativo</td>
+        <td class="td-gk">δοτική</td>
+        <td class="td-tr">Objeto indirecto («a», «para», «en»)</td>
+        <td class="td-dim">¿A quién? ¿Con qué?</td>
+      </tr>
+      <tr>
+        <td class="td-tr" style="font-weight:600;color:var(--rust)">Acusativo</td>
+        <td class="td-gk">αἰτιατική</td>
+        <td class="td-tr">Objeto directo de la acción</td>
+        <td class="td-dim">¿A quién/qué se afecta?</td>
+      </tr>
+      <tr>
+        <td class="td-tr" style="font-weight:600;color:var(--ivory-dim)">Vocativo</td>
+        <td class="td-gk">κλητική</td>
+        <td class="td-tr">Apelación directa</td>
+        <td class="td-dim">¿A quién se habla directamente?</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Casos en el Nuevo Testamento</h2>
+
+  <div class="example">
+    <div class="ex-gk">ὁ <span style="color:#c9973a;text-decoration:underline">θεὸς</span> ἀγαπᾷ τὸν <span style="color:#c9716a;text-decoration:underline">κόσμον</span></div>
+    <div class="ex-es">«Dios ama al mundo»</div>
+    <div class="ex-tr"><span style="color:#c9973a">θεὸς</span> = nominativo (sujeto) · <span style="color:#c9716a">κόσμον</span> = acusativo (objeto directo)</div>
+    <div class="ex-ref">Juan 3:16</div>
+  </div>
+
+  <div class="example">
+    <div class="ex-gk">ἡ ἀγάπη τοῦ <span style="color:#7a9bc9;text-decoration:underline">θεοῦ</span></div>
+    <div class="ex-es">«el amor de Dios»</div>
+    <div class="ex-tr"><span style="color:#7a9bc9">θεοῦ</span> = genitivo (posesión)</div>
+    <div class="ex-ref">Romanos 5:5</div>
+  </div>
+
+  <div class="example">
+    <div class="ex-gk">ἐν <span style="color:#7abc7a;text-decoration:underline">Χριστῷ</span></div>
+    <div class="ex-es">«en Cristo»</div>
+    <div class="ex-tr"><span style="color:#7abc7a">Χριστῷ</span> = dativo (usado con la preposición ἐν)</div>
+    <div class="ex-ref">Fórmula frecuente en Pablo</div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">✦</span>
+    <span>La clave del aprendizaje de los casos: asociá cada caso con <em>preguntas</em>, no con definiciones abstractas. El nominativo es «¿quién lo hace?», el acusativo es «¿a quién lo hace?», el genitivo es «¿de quién?». Con esto, cuando veas una terminación, ya sabés qué buscar.</span>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('m0l3')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mal2'); markDone('mal1')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MA L2 — SEGUNDA DECLINACIÓN
+     ============================================================ -->
+<div class="section" id="section-mal2">
+  <div class="eyebrow">Módulo A · Lección 2</div>
+  <h1 class="page-title">La segunda declinación</h1>
+  <div class="greek-subtitle">Ἡ δευτέρα κλίσις — sustantivos en -ος (masculinos)</div>
+
+  <p>La segunda declinación agrupa los sustantivos masculinos terminados en <span class="gk">-ος</span> y los neutros en <span class="gk">-ον</span>. Es la declinación más frecuente en el NT — incluye palabras fundamentales como <span class="gk">λόγος</span>, <span class="gk">θεός</span>, <span class="gk">κύριος</span>, <span class="gk">ἄνθρωπος</span>.</p>
+
+  <h2 class="lesson-h">Paradigma — Masculino en -ος</h2>
+  <p>Modelo: <span class="gk">λόγος</span> (palabra / razón) — Juan 1:1</p>
+
+  <div class="paradigm paradigm-4col">
+    <div class="para-cell header">Caso</div>
+    <div class="para-cell header">Singular</div>
+    <div class="para-cell header">Plural</div>
+    <div class="para-cell header">Función</div>
+
+    <div class="para-cell case-label" style="color:var(--gold)">Nominativo</div>
+    <div class="para-cell"><div class="para-gk">λόγ-ος</div><div class="para-tr">lógos</div></div>
+    <div class="para-cell"><div class="para-gk">λόγ-οι</div><div class="para-tr">lógoi</div></div>
+    <div class="para-cell" style="font-size:12px;color:var(--ivory-dim)">Sujeto</div>
+
+    <div class="para-cell case-label" style="color:var(--azure)">Genitivo</div>
+    <div class="para-cell"><div class="para-gk">λόγ-ου</div><div class="para-tr">lógou</div></div>
+    <div class="para-cell"><div class="para-gk">λόγ-ων</div><div class="para-tr">lógōn</div></div>
+    <div class="para-cell" style="font-size:12px;color:var(--ivory-dim)">«de»</div>
+
+    <div class="para-cell case-label" style="color:var(--green)">Dativo</div>
+    <div class="para-cell"><div class="para-gk">λόγ-ῳ</div><div class="para-tr">lógōi</div></div>
+    <div class="para-cell"><div class="para-gk">λόγ-οις</div><div class="para-tr">lógois</div></div>
+    <div class="para-cell" style="font-size:12px;color:var(--ivory-dim)">«a» / «en»</div>
+
+    <div class="para-cell case-label" style="color:var(--rust)">Acusativo</div>
+    <div class="para-cell"><div class="para-gk">λόγ-ον</div><div class="para-tr">lógon</div></div>
+    <div class="para-cell"><div class="para-gk">λόγ-ους</div><div class="para-tr">lógous</div></div>
+    <div class="para-cell" style="font-size:12px;color:var(--ivory-dim)">Obj. directo</div>
+
+    <div class="para-cell case-label" style="color:var(--ivory-dim)">Vocativo</div>
+    <div class="para-cell"><div class="para-gk">λόγ-ε</div><div class="para-tr">lóge</div></div>
+    <div class="para-cell"><div class="para-gk">λόγ-οι</div><div class="para-tr">lógoi</div></div>
+    <div class="para-cell" style="font-size:12px;color:var(--ivory-dim)">Apelación</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Regla de oro — La raíz no cambia</div>
+    <p style="margin:0;font-size:13.5px">La raíz <span class="gk">λογ-</span> permanece igual en todos los casos. Lo que cambia son las terminaciones. Aprendé las terminaciones, no cada forma por separado. Una vez que sabés el paradigma de λόγος, sabés declinarte también θεός, κύριος y cientos de palabras más.</p>
+  </div>
+
+  <h2 class="lesson-h">Palabras del NT en segunda declinación</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Nominativo</th><th>Genitivo</th><th>Significado</th><th>Ocurrencias NT</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">λόγος</td><td class="td-gk">λόγου</td><td class="td-tr">palabra, razón, mensaje</td><td class="td-dim">330 veces</td></tr>
+      <tr><td class="td-gk">θεός</td><td class="td-gk">θεοῦ</td><td class="td-tr">Dios</td><td class="td-dim">1318 veces</td></tr>
+      <tr><td class="td-gk">κύριος</td><td class="td-gk">κυρίου</td><td class="td-tr">Señor</td><td class="td-dim">717 veces</td></tr>
+      <tr><td class="td-gk">ἄνθρωπος</td><td class="td-gk">ἀνθρώπου</td><td class="td-tr">ser humano</td><td class="td-dim">550 veces</td></tr>
+      <tr><td class="td-gk">υἱός</td><td class="td-gk">υἱοῦ</td><td class="td-tr">hijo</td><td class="td-dim">377 veces</td></tr>
+      <tr><td class="td-gk">οἶκος</td><td class="td-gk">οἴκου</td><td class="td-tr">casa</td><td class="td-dim">114 veces</td></tr>
+      <tr><td class="td-gk">νόμος</td><td class="td-gk">νόμου</td><td class="td-tr">ley</td><td class="td-dim">194 veces</td></tr>
+      <tr><td class="td-gk">ἀδελφός</td><td class="td-gk">ἀδελφοῦ</td><td class="td-tr">hermano</td><td class="td-dim">343 veces</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Ejercicio — Declinación</h2>
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 4 — Identificar caso y número</div>
+    <div class="exercise-num-label">¿Qué caso es cada forma? Escribí: nominativo, genitivo, dativo o acusativo</div>
+    <div id="ex-mal2-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('mal2')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('mal2')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('mal2')">Reintentar</button>
+    </div>
+    <div id="ex-mal2-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-mal2-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mal1')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mal3'); markDone('mal2')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MA L3 — EL ARTÍCULO
+     ============================================================ -->
+<div class="section" id="section-mal3">
+  <div class="eyebrow">Módulo A · Lección 3</div>
+  <h1 class="page-title">El artículo definido</h1>
+  <div class="greek-subtitle">Τὸ ἄρθρον — ὁ, ἡ, τό</div>
+
+  <p>El griego tiene artículo definido (<em>el, la, los, las</em>) pero <strong>no tiene artículo indefinido</strong> («un», «una»). La ausencia de artículo generalmente indica indefinición. El artículo griego es fundamental: concuerda en <strong>género, número y caso</strong> con el sustantivo al que acompaña.</p>
+
+  <h2 class="lesson-h">Paradigma del artículo definido</h2>
+
+  <div class="paradigm" style="grid-template-columns: 1.2fr 1fr 1fr 1fr;">
+    <div class="para-cell header">Caso</div>
+    <div class="para-cell header">Masc.</div>
+    <div class="para-cell header">Fem.</div>
+    <div class="para-cell header">Neutro</div>
+
+    <div class="para-cell case-label">Nom. sg.</div>
+    <div class="para-cell"><div class="para-gk">ὁ</div></div>
+    <div class="para-cell"><div class="para-gk">ἡ</div></div>
+    <div class="para-cell"><div class="para-gk">τό</div></div>
+
+    <div class="para-cell case-label">Gen. sg.</div>
+    <div class="para-cell"><div class="para-gk">τοῦ</div></div>
+    <div class="para-cell"><div class="para-gk">τῆς</div></div>
+    <div class="para-cell"><div class="para-gk">τοῦ</div></div>
+
+    <div class="para-cell case-label">Dat. sg.</div>
+    <div class="para-cell"><div class="para-gk">τῷ</div></div>
+    <div class="para-cell"><div class="para-gk">τῇ</div></div>
+    <div class="para-cell"><div class="para-gk">τῷ</div></div>
+
+    <div class="para-cell case-label">Ac. sg.</div>
+    <div class="para-cell"><div class="para-gk">τόν</div></div>
+    <div class="para-cell"><div class="para-gk">τήν</div></div>
+    <div class="para-cell"><div class="para-gk">τό</div></div>
+
+    <div class="para-cell case-label">Nom. pl.</div>
+    <div class="para-cell"><div class="para-gk">οἱ</div></div>
+    <div class="para-cell"><div class="para-gk">αἱ</div></div>
+    <div class="para-cell"><div class="para-gk">τά</div></div>
+
+    <div class="para-cell case-label">Gen. pl.</div>
+    <div class="para-cell"><div class="para-gk">τῶν</div></div>
+    <div class="para-cell"><div class="para-gk">τῶν</div></div>
+    <div class="para-cell"><div class="para-gk">τῶν</div></div>
+
+    <div class="para-cell case-label">Dat. pl.</div>
+    <div class="para-cell"><div class="para-gk">τοῖς</div></div>
+    <div class="para-cell"><div class="para-gk">ταῖς</div></div>
+    <div class="para-cell"><div class="para-gk">τοῖς</div></div>
+
+    <div class="para-cell case-label">Ac. pl.</div>
+    <div class="para-cell"><div class="para-gk">τούς</div></div>
+    <div class="para-cell"><div class="para-gk">τάς</div></div>
+    <div class="para-cell"><div class="para-gk">τά</div></div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">✦</span>
+    <span>Memorizá primero la columna masculina — es la que usarás con la segunda declinación. Notá que las formas del masculino y neutro son idénticas en genitivo y dativo.</span>
+  </div>
+
+  <h2 class="lesson-h">El artículo como marcador de caso</h2>
+  <p>Una habilidad clave para leer el NT: cuando no podés identificar el caso de un sustantivo por su terminación, el artículo que lo acompaña te lo dice:</p>
+
+  <div class="example">
+    <div class="ex-gk">ἐν ἀρχῇ ἦν <span style="text-decoration:underline">ὁ</span> λόγος</div>
+    <div class="ex-es">«En el principio era <em>la</em> Palabra»</div>
+    <div class="ex-tr">ὁ = artículo masculino nominativo → λόγος es sujeto</div>
+    <div class="ex-ref">Juan 1:1</div>
+  </div>
+
+  <div class="example">
+    <div class="ex-gk">οὕτως γὰρ ἠγάπησεν ὁ θεὸς <span style="text-decoration:underline">τὸν</span> κόσμον</div>
+    <div class="ex-es">«Porque de tal manera amó Dios <em>al</em> mundo»</div>
+    <div class="ex-tr">τὸν = artículo masculino acusativo → κόσμον es objeto directo</div>
+    <div class="ex-ref">Juan 3:16</div>
+  </div>
+
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 5 — El artículo definido</div>
+    <div class="exercise-num-label">Completá con la forma correcta del artículo</div>
+    <div id="ex-mal3-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('mal3')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('mal3')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('mal3')">Reintentar</button>
+    </div>
+    <div id="ex-mal3-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-mal3-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mal2')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mbl1'); markDone('mal3')">Módulo B →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MB L1 — ΕἸΜΊ
+     ============================================================ -->
+<div class="section" id="section-mbl1">
+  <div class="eyebrow">Módulo B · Lección 1</div>
+  <h1 class="page-title">El verbo εἰμί</h1>
+  <div class="greek-subtitle">«Ser» y «estar» — el verbo más frecuente del NT</div>
+
+  <p>El verbo <span class="gk">εἰμί</span> (ser / estar) es el más importante del Nuevo Testamento. Aparece más de 2.400 veces. A diferencia de los verbos regulares, sus formas son irregulares y deben memorizarse directamente.</p>
+
+  <h2 class="lesson-h">Presente de εἰμί</h2>
+
+  <div class="paradigm paradigm-3col">
+    <div class="para-cell header">Persona</div>
+    <div class="para-cell header">Singular</div>
+    <div class="para-cell header">Plural</div>
+
+    <div class="para-cell case-label">1.ª (yo / nosotros)</div>
+    <div class="para-cell"><div class="para-gk">εἰμί</div><div class="para-tr">eimí — «soy / estoy»</div></div>
+    <div class="para-cell"><div class="para-gk">ἐσμέν</div><div class="para-tr">esmén — «somos / estamos»</div></div>
+
+    <div class="para-cell case-label">2.ª (tú / vosotros)</div>
+    <div class="para-cell"><div class="para-gk">εἶ</div><div class="para-tr">eî — «eres / estás»</div></div>
+    <div class="para-cell"><div class="para-gk">ἐστέ</div><div class="para-tr">esté — «sois / estáis»</div></div>
+
+    <div class="para-cell case-label">3.ª (él/ella / ellos)</div>
+    <div class="para-cell"><div class="para-gk">ἐστί(ν)</div><div class="para-tr">estí(n) — «es / está»</div></div>
+    <div class="para-cell"><div class="para-gk">εἰσί(ν)</div><div class="para-tr">eisí(n) — «son / están»</div></div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">✦</span>
+    <span>La <strong>ν móvil</strong> entre paréntesis: ἐστί(ν) y εἰσί(ν) agregan una ν final cuando la palabra siguiente comienza con vocal o al final de frase. Es solo ortográfica — no cambia el significado.</span>
+  </div>
+
+  <h2 class="lesson-h">εἰμί en el NT — ejemplos fundamentales</h2>
+
+  <div class="example">
+    <div class="ex-gk">Ἐγώ <span style="color:var(--gold)">εἰμι</span> ἡ ὁδὸς καὶ ἡ ἀλήθεια καὶ ἡ ζωή.</div>
+    <div class="ex-es">«Yo <em>soy</em> el camino, la verdad y la vida.»</div>
+    <div class="ex-ref">Juan 14:6</div>
+  </div>
+
+  <div class="example">
+    <div class="ex-gk">Ὁ θεὸς ἀγάπη <span style="color:var(--gold)">ἐστίν</span>.</div>
+    <div class="ex-es">«Dios <em>es</em> amor.»</div>
+    <div class="ex-ref">1 Juan 4:8</div>
+  </div>
+
+  <div class="example">
+    <div class="ex-gk">ὑμεῖς <span style="color:var(--gold)">ἐστε</span> τὸ φῶς τοῦ κόσμου.</div>
+    <div class="ex-es">«Vosotros <em>sois</em> la luz del mundo.»</div>
+    <div class="ex-ref">Mateo 5:14</div>
+  </div>
+
+  <h2 class="lesson-h">Las fórmulas ἐγώ εἰμι</h2>
+  <p>Jesús usa <span class="gk">Ἐγώ εἰμι</span> (Yo soy) siete veces en Juan, en eco directo del nombre divino del Éxodo (Éxodo 3:14). Reconocer esta fórmula es esencial para la teología joánica:</p>
+
+  <table class="gk-table">
+    <thead><tr><th>Griego</th><th>Traducción</th><th>Referencia</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">Ἐγώ εἰμι ἡ ἄρτος τῆς ζωῆς</td><td class="td-tr">«Yo soy el pan de la vida»</td><td class="td-dim">Juan 6:35</td></tr>
+      <tr><td class="td-gk">Ἐγώ εἰμι τὸ φῶς τοῦ κόσμου</td><td class="td-tr">«Yo soy la luz del mundo»</td><td class="td-dim">Juan 8:12</td></tr>
+      <tr><td class="td-gk">Ἐγώ εἰμι ἡ ὁδὸς</td><td class="td-tr">«Yo soy el camino»</td><td class="td-dim">Juan 14:6</td></tr>
+      <tr><td class="td-gk">Ἐγώ εἰμι ἡ ἀνάστασις</td><td class="td-tr">«Yo soy la resurrección»</td><td class="td-dim">Juan 11:25</td></tr>
+      <tr><td class="td-gk">Ἐγώ εἰμι ὁ ποιμήν</td><td class="td-tr">«Yo soy el buen pastor»</td><td class="td-dim">Juan 10:11</td></tr>
+    </tbody>
+  </table>
+
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 6 — El verbo εἰμί</div>
+    <div class="exercise-num-label">Completá con la forma correcta de εἰμί</div>
+    <div id="ex-mbl1-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('mbl1')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('mbl1')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('mbl1')">Reintentar</button>
+    </div>
+    <div id="ex-mbl1-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-mbl1-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mal3')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mbl2'); markDone('mbl1')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MB L2 — PRESENTE ACTIVO -ω
+     ============================================================ -->
+<div class="section" id="section-mbl2">
+  <div class="eyebrow">Módulo B · Lección 2</div>
+  <h1 class="page-title">Presente activo en -ω</h1>
+  <div class="greek-subtitle">Ἡ ἐνεστῶσα ἔγκλισις — verbos regulares del Nuevo Testamento</div>
+
+  <p>Los verbos en griego koiné se organizan por terminaciones. La clase más grande y regular son los verbos que terminan en <span class="gk">-ω</span> en la primera persona del singular del presente. El paradigma que aprenderás aquí cubre cientos de verbos del NT.</p>
+
+  <h2 class="lesson-h">Las desinencias del presente activo</h2>
+
+  <div class="formula">
+    <div class="formula-label">Estructura del verbo griego</div>
+    <div class="formula-content">RAÍZ + VOCAL TEMÁTICA + DESINENCIA PERSONAL</div>
+  </div>
+
+  <p>Modelo: <span class="gk">λύω</span> (desatar, liberar) — raíz: λυ-</p>
+
+  <div class="paradigm paradigm-3col">
+    <div class="para-cell header">Persona</div>
+    <div class="para-cell header">Singular</div>
+    <div class="para-cell header">Plural</div>
+
+    <div class="para-cell case-label">1.ª (yo / nosotros)</div>
+    <div class="para-cell"><div class="para-gk">λύ-ω</div><div class="para-tr">lýō — «desato»</div></div>
+    <div class="para-cell"><div class="para-gk">λύ-ομεν</div><div class="para-tr">lýomen — «desatamos»</div></div>
+
+    <div class="para-cell case-label">2.ª (tú / vosotros)</div>
+    <div class="para-cell"><div class="para-gk">λύ-εις</div><td class="para-tr">lýeis — «desatas»</div></div>
+    <div class="para-cell"><div class="para-gk">λύ-ετε</div><div class="para-tr">lýete — «desatáis»</div></div>
+
+    <div class="para-cell case-label">3.ª (él / ellos)</div>
+    <div class="para-cell"><div class="para-gk">λύ-ει</div><div class="para-tr">lýei — «desata»</div></div>
+    <div class="para-cell"><div class="para-gk">λύ-ουσι(ν)</div><div class="para-tr">lýousi — «desatan»</div></div>
+  </div>
+
+  <div class="card gold-border">
+    <div class="card-label">Desinencias — memorizar estas 6 formas</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px">
+      <div><span class="gk">-ω</span> → yo</div>
+      <div><span class="gk">-ομεν</span> → nosotros</div>
+      <div><span class="gk">-εις</span> → tú</div>
+      <div><span class="gk">-ετε</span> → vosotros</div>
+      <div><span class="gk">-ει</span> → él/ella</div>
+      <div><span class="gk">-ουσι(ν)</span> → ellos</div>
+    </div>
+  </div>
+
+  <h2 class="lesson-h">Verbos -ω esenciales del NT</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Infinitivo</th><th>1.ª sg.</th><th>Significado</th><th>Ocurrencias</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">λέγειν</td><td class="td-gk">λέγω</td><td class="td-tr">decir, hablar</td><td class="td-dim">2346 veces</td></tr>
+      <tr><td class="td-gk">ἔχειν</td><td class="td-gk">ἔχω</td><td class="td-tr">tener, poseer</td><td class="td-dim">708 veces</td></tr>
+      <tr><td class="td-gk">ἀκούειν</td><td class="td-gk">ἀκούω</td><td class="td-tr">oír, escuchar</td><td class="td-dim">428 veces</td></tr>
+      <tr><td class="td-gk">βλέπειν</td><td class="td-gk">βλέπω</td><td class="td-tr">ver, mirar</td><td class="td-dim">133 veces</td></tr>
+      <tr><td class="td-gk">γράφειν</td><td class="td-gk">γράφω</td><td class="td-tr">escribir</td><td class="td-dim">191 veces</td></tr>
+      <tr><td class="td-gk">πιστεύειν</td><td class="td-gk">πιστεύω</td><td class="td-tr">creer, confiar</td><td class="td-dim">241 veces</td></tr>
+      <tr><td class="td-gk">γινώσκειν</td><td class="td-gk">γινώσκω</td><td class="td-tr">conocer, saber</td><td class="td-dim">222 veces</td></tr>
+      <tr><td class="td-gk">λύειν</td><td class="td-gk">λύω</td><td class="td-tr">desatar, liberar</td><td class="td-dim">42 veces</td></tr>
+    </tbody>
+  </table>
+
+  <div class="example">
+    <div class="ex-gk">ἀκούω τὴν φωνήν σου.</div>
+    <div class="ex-es">«Escucho tu voz.»</div>
+    <div class="ex-tr">ἀκούω (1.ª sg.) + τήν φωνήν (acusativo) + σου (genitivo, «de ti» → «tu»)</div>
+  </div>
+
+  <div class="example">
+    <div class="ex-gk">πιστεύομεν εἰς τὸν υἱὸν τοῦ θεοῦ.</div>
+    <div class="ex-es">«Creemos en el Hijo de Dios.»</div>
+    <div class="ex-tr">πιστεύομεν (1.ª pl.) + εἰς τὸν υἱόν (acusativo con prep.) + τοῦ θεοῦ (genitivo)</div>
+  </div>
+
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 7 — Conjugar verbos en -ω</div>
+    <div class="exercise-num-label">Escribí la forma correcta del verbo indicado</div>
+    <div id="ex-mbl2-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('mbl2')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('mbl2')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('mbl2')">Reintentar</button>
+    </div>
+    <div id="ex-mbl2-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-mbl2-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mbl1')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mbl3'); markDone('mbl2')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MB L3 — NEGACIÓN Y PREGUNTAS
+     ============================================================ -->
+<div class="section" id="section-mbl3">
+  <div class="eyebrow">Módulo B · Lección 3</div>
+  <h1 class="page-title">Negación y preguntas</h1>
+  <div class="greek-subtitle">Ἄρνησις καὶ ἐρωτήσεις</div>
+
+  <p>El griego tiene dos palabras para «no», cada una con un matiz teológico importante. Entender la diferencia entre <span class="gk">οὐ</span> y <span class="gk">μή</span> es crucial para la exégesis del NT.</p>
+
+  <h2 class="lesson-h">Las dos negaciones</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Partícula</th><th>Uso principal</th><th>Matiz</th><th>Ejemplo NT</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="td-gk" style="font-size:20px">οὐ / οὐκ / οὐχ</td>
+        <td class="td-tr">Indicativo — negación de hechos</td>
+        <td class="td-dim">Niega una realidad objetiva</td>
+        <td class="td-gk">οὐκ οἴδατε</td>
+      </tr>
+      <tr>
+        <td class="td-gk" style="font-size:20px">μή</td>
+        <td class="td-tr">Imperativo, subjuntivo — negación de posibilidades</td>
+        <td class="td-dim">Niega una voluntad o deseo</td>
+        <td class="td-gk">μὴ φοβεῖσθε</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card rust-border">
+    <div class="card-label">Diferencia teológica clave</div>
+    <p style="margin:0;font-size:13.5px"><span class="gk">Οὐ φοβοῦμαι</span> = «No temo» (hecho — en este momento no siento temor)<br>
+    <span class="gk">Μὴ φοβεῖσθε</span> = «No temáis» (mandato — dejad de temer / no comencéis a temer)<br>
+    Cuando Jesús dice «<span class="gk">μὴ φοβεῖσθε</span>», está dando un imperativo activo — no solo describiendo un estado.</p>
+  </div>
+
+  <h2 class="lesson-h">Preguntas en griego</h2>
+
+  <p>El griego usa partículas interrogativas al inicio de la pregunta. No cambia el orden de las palabras como en inglés:</p>
+
+  <table class="gk-table">
+    <thead><tr><th>Partícula</th><th>Significado</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">τίς; τί;</td><td class="td-tr">¿Quién? ¿Qué?</td><td class="td-gk">Τίς ἐστιν οὗτος; — «¿Quién es este?»</td></tr>
+      <tr><td class="td-gk">ποῦ;</td><td class="td-tr">¿Dónde?</td><td class="td-gk">Ποῦ ἐστιν; — «¿Dónde está?»</td></tr>
+      <tr><td class="td-gk">πῶς;</td><td class="td-tr">¿Cómo?</td><td class="td-gk">Πῶς δύναται; — «¿Cómo puede?»</td></tr>
+      <tr><td class="td-gk">διατί / ἵνα τί;</td><td class="td-tr">¿Por qué?</td><td class="td-gk">Ἵνα τί τοῦτο; — «¿Por qué esto?»</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Preposiciones esenciales del NT</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Preposición</th><th>+ Caso</th><th>Significado</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">ἐν</td><td class="td-dim">+ dat.</td><td class="td-tr">en, dentro de</td><td class="td-gk">ἐν Χριστῷ — «en Cristo»</td></tr>
+      <tr><td class="td-gk">εἰς</td><td class="td-dim">+ ac.</td><td class="td-tr">hacia, en (movimiento)</td><td class="td-gk">εἰς τὸν κόσμον</td></tr>
+      <tr><td class="td-gk">ἐκ / ἐξ</td><td class="td-dim">+ gen.</td><td class="td-tr">de, desde (origen)</td><td class="td-gk">ἐκ τοῦ θεοῦ</td></tr>
+      <tr><td class="td-gk">διά</td><td class="td-dim">+ gen./ac.</td><td class="td-tr">a través de, por medio de</td><td class="td-gk">διὰ πίστεως — «por fe»</td></tr>
+      <tr><td class="td-gk">κατά</td><td class="td-dim">+ gen./ac.</td><td class="td-tr">según, contra</td><td class="td-gk">κατὰ θεόν — «según Dios»</td></tr>
+      <tr><td class="td-gk">πρός</td><td class="td-dim">+ ac.</td><td class="td-tr">hacia, con (relación)</td><td class="td-gk">πρὸς τὸν θεόν — «con Dios»</td></tr>
+    </tbody>
+  </table>
+
+  <div class="example">
+    <div class="ex-gk">Ἐν ἀρχῇ ἦν ὁ λόγος, καὶ ὁ λόγος ἦν πρὸς τὸν θεόν.</div>
+    <div class="ex-es">«En el principio era el Verbo, y el Verbo era con Dios.»</div>
+    <div class="ex-tr">ἐν + dat. (ἀρχῇ) · πρός + ac. (τὸν θεόν)</div>
+    <div class="ex-ref">Juan 1:1</div>
+  </div>
+
+  <div class="exercise-block">
+    <div class="exercise-title">Ejercicio 8 — Negación y preposiciones</div>
+    <div class="exercise-num-label">Traducí o completá según se indica</div>
+    <div id="ex-mbl3-container"></div>
+    <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="checkEx('mbl3')">Verificar</button>
+      <button class="btn btn-ivory" onclick="showAnswers('mbl3')">Ver respuestas</button>
+      <button class="btn btn-ivory" onclick="resetEx('mbl3')">Reintentar</button>
+    </div>
+    <div id="ex-mbl3-score" class="hidden" style="margin-top:14px"></div>
+    <div id="ex-mbl3-answers" class="answer-reveal"></div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mbl2')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mcl1'); markDone('mbl3')">Módulo C →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MC L1 — SUSTANTIVOS ESENCIALES
+     ============================================================ -->
+<div class="section" id="section-mcl1">
+  <div class="eyebrow">Módulo C · Lección 1</div>
+  <h1 class="page-title">Sustantivos esenciales del NT</h1>
+  <div class="greek-subtitle">Λέξεις ὑψηλῆς συχνότητος — palabras que aparecen más de 100 veces</div>
+
+  <p>Aprender las palabras más frecuentes del NT te da acceso rápido a la mayor parte del texto. Las 100 palabras más comunes del NT cubren más del 60% de todas las palabras del texto. Aquí están los sustantivos clave:</p>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(this,'voc-dios')">Dios y Fe</div>
+    <div class="tab" onclick="switchTab(this,'voc-persona')">Persona</div>
+    <div class="tab" onclick="switchTab(this,'voc-lugar')">Lugar y Tiempo</div>
+  </div>
+
+  <div class="tab-content active" id="voc-dios">
+    <table class="gk-table">
+      <thead><tr><th>Griego</th><th>Gen.</th><th>Español</th><th>Veces</th></tr></thead>
+      <tbody>
+        <tr><td class="td-gk">θεός</td><td class="td-gk">θεοῦ</td><td class="td-tr">Dios</td><td class="td-dim">1318</td></tr>
+        <tr><td class="td-gk">κύριος</td><td class="td-gk">κυρίου</td><td class="td-tr">Señor</td><td class="td-dim">717</td></tr>
+        <tr><td class="td-gk">Χριστός</td><td class="td-gk">Χριστοῦ</td><td class="td-tr">Cristo, Ungido</td><td class="td-dim">529</td></tr>
+        <tr><td class="td-gk">πνεῦμα</td><td class="td-gk">πνεύματος</td><td class="td-tr">espíritu, aliento</td><td class="td-dim">379</td></tr>
+        <tr><td class="td-gk">πίστις</td><td class="td-gk">πίστεως</td><td class="td-tr">fe, confianza</td><td class="td-dim">243</td></tr>
+        <tr><td class="td-gk">ἀγάπη</td><td class="td-gk">ἀγάπης</td><td class="td-tr">amor (divino)</td><td class="td-dim">116</td></tr>
+        <tr><td class="td-gk">ζωή</td><td class="td-gk">ζωῆς</td><td class="td-tr">vida</td><td class="td-dim">135</td></tr>
+        <tr><td class="td-gk">λόγος</td><td class="td-gk">λόγου</td><td class="td-tr">palabra, razón</td><td class="td-dim">330</td></tr>
+        <tr><td class="td-gk">νόμος</td><td class="td-gk">νόμου</td><td class="td-tr">ley</td><td class="td-dim">194</td></tr>
+        <tr><td class="td-gk">χάρις</td><td class="td-gk">χάριτος</td><td class="td-tr">gracia, favor</td><td class="td-dim">155</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-content" id="voc-persona">
+    <table class="gk-table">
+      <thead><tr><th>Griego</th><th>Gen.</th><th>Español</th><th>Veces</th></tr></thead>
+      <tbody>
+        <tr><td class="td-gk">ἄνθρωπος</td><td class="td-gk">ἀνθρώπου</td><td class="td-tr">ser humano, hombre</td><td class="td-dim">550</td></tr>
+        <tr><td class="td-gk">υἱός</td><td class="td-gk">υἱοῦ</td><td class="td-tr">hijo</td><td class="td-dim">377</td></tr>
+        <tr><td class="td-gk">ἀδελφός</td><td class="td-gk">ἀδελφοῦ</td><td class="td-tr">hermano</td><td class="td-dim">343</td></tr>
+        <tr><td class="td-gk">πατήρ</td><td class="td-gk">πατρός</td><td class="td-tr">padre</td><td class="td-dim">413</td></tr>
+        <tr><td class="td-gk">μαθητής</td><td class="td-gk">μαθητοῦ</td><td class="td-tr">discípulo</td><td class="td-dim">261</td></tr>
+        <tr><td class="td-gk">ἀπόστολος</td><td class="td-gk">ἀποστόλου</td><td class="td-tr">apóstol, enviado</td><td class="td-dim">80</td></tr>
+        <tr><td class="td-gk">γυνή</td><td class="td-gk">γυναικός</td><td class="td-tr">mujer, esposa</td><td class="td-dim">215</td></tr>
+        <tr><td class="td-gk">τέκνον</td><td class="td-gk">τέκνου</td><td class="td-tr">hijo (afecto), niño</td><td class="td-dim">99</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-content" id="voc-lugar">
+    <table class="gk-table">
+      <thead><tr><th>Griego</th><th>Gen.</th><th>Español</th><th>Veces</th></tr></thead>
+      <tbody>
+        <tr><td class="td-gk">οὐρανός</td><td class="td-gk">οὐρανοῦ</td><td class="td-tr">cielo</td><td class="td-dim">273</td></tr>
+        <tr><td class="td-gk">γῆ</td><td class="td-gk">γῆς</td><td class="td-tr">tierra, suelo</td><td class="td-dim">250</td></tr>
+        <tr><td class="td-gk">κόσμος</td><td class="td-gk">κόσμου</td><td class="td-tr">mundo, orden</td><td class="td-dim">186</td></tr>
+        <tr><td class="td-gk">οἶκος</td><td class="td-gk">οἴκου</td><td class="td-tr">casa</td><td class="td-dim">114</td></tr>
+        <tr><td class="td-gk">πόλις</td><td class="td-gk">πόλεως</td><td class="td-tr">ciudad</td><td class="td-dim">163</td></tr>
+        <tr><td class="td-gk">ἡμέρα</td><td class="td-gk">ἡμέρας</td><td class="td-tr">día</td><td class="td-dim">389</td></tr>
+        <tr><td class="td-gk">ὥρα</td><td class="td-gk">ὥρας</td><td class="td-tr">hora, tiempo</td><td class="td-dim">106</td></tr>
+        <tr><td class="td-gk">αἰών</td><td class="td-gk">αἰῶνος</td><td class="td-tr">era, siglo, eternidad</td><td class="td-dim">122</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ornament">· ✦ ·</div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mbl3')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mcl2'); markDone('mcl1')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MC L2 — VERBOS ESENCIALES
+     ============================================================ -->
+<div class="section" id="section-mcl2">
+  <div class="eyebrow">Módulo C · Lección 2</div>
+  <h1 class="page-title">Verbos esenciales del NT</h1>
+  <div class="greek-subtitle">Ῥήματα ὑψηλῆς συχνότητος</div>
+
+  <h2 class="lesson-h">Los 20 verbos más frecuentes</h2>
+
+  <table class="gk-table">
+    <thead><tr><th>Presente</th><th>Significado</th><th>Aorist. raíz</th><th>Veces</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">εἰμί</td><td class="td-tr">ser / estar</td><td class="td-dim">ἦν (impf.)</td><td class="td-dim">2460</td></tr>
+      <tr><td class="td-gk">λέγω</td><td class="td-tr">decir, hablar</td><td class="td-dim">εἶπον</td><td class="td-dim">2346</td></tr>
+      <tr><td class="td-gk">ἔρχομαι</td><td class="td-tr">venir, ir</td><td class="td-dim">ἦλθον</td><td class="td-dim">634</td></tr>
+      <tr><td class="td-gk">ποιέω</td><td class="td-tr">hacer</td><td class="td-dim">ἐποίησα</td><td class="td-dim">568</td></tr>
+      <tr><td class="td-gk">ἔχω</td><td class="td-tr">tener, poseer</td><td class="td-dim">εἶχον</td><td class="td-dim">708</td></tr>
+      <tr><td class="td-gk">ἀκούω</td><td class="td-tr">oír, escuchar</td><td class="td-dim">ἤκουσα</td><td class="td-dim">428</td></tr>
+      <tr><td class="td-gk">βλέπω</td><td class="td-tr">ver, mirar</td><td class="td-dim">εἶδον</td><td class="td-dim">133</td></tr>
+      <tr><td class="td-gk">οἶδα</td><td class="td-tr">saber, conocer</td><td class="td-dim">(perfecto)</td><td class="td-dim">318</td></tr>
+      <tr><td class="td-gk">λαμβάνω</td><td class="td-tr">tomar, recibir</td><td class="td-dim">ἔλαβον</td><td class="td-dim">258</td></tr>
+      <tr><td class="td-gk">ἀγαπάω</td><td class="td-tr">amar (con ἀγάπη)</td><td class="td-dim">ἠγάπησα</td><td class="td-dim">143</td></tr>
+      <tr><td class="td-gk">πιστεύω</td><td class="td-tr">creer, confiar</td><td class="td-dim">ἐπίστευσα</td><td class="td-dim">241</td></tr>
+      <tr><td class="td-gk">γινώσκω</td><td class="td-tr">conocer, percibir</td><td class="td-dim">ἔγνων</td><td class="td-dim">222</td></tr>
+      <tr><td class="td-gk">ἀποκρίνομαι</td><td class="td-tr">responder</td><td class="td-dim">ἀπεκρίθην</td><td class="td-dim">231</td></tr>
+      <tr><td class="td-gk">γράφω</td><td class="td-tr">escribir</td><td class="td-dim">ἔγραψα</td><td class="td-dim">191</td></tr>
+      <tr><td class="td-gk">ἐγείρω</td><td class="td-tr">levantar, resucitar</td><td class="td-dim">ἤγειρα</td><td class="td-dim">144</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <span class="tip-icon">✦</span>
+    <span>La diferencia entre <span class="gk">ἀγαπάω</span> y <span class="gk">φιλέω</span>: ambos significan «amar», pero ἀγαπάω implica un amor de elección y compromiso (el amor de Dios, ágape), mientras que φιλέω implica afecto cálido y amistad. Juan 21:15-17 usa ambos en el diálogo entre Jesús y Pedro — un matiz visible solo en griego.</span>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mcl1')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('mcl3'); markDone('mcl2')">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MC L3 — LECTURA DEL NT
+     ============================================================ -->
+<div class="section" id="section-mcl3">
+  <div class="eyebrow">Módulo C · Lección 3</div>
+  <h1 class="page-title">Primera lectura del Nuevo Testamento</h1>
+  <div class="greek-subtitle">Ἀνάγνωσις τῆς Καινῆς Διαθήκης</div>
+
+  <p>Con todo lo aprendido, ya podés aproximarte al texto griego. Vamos a leer y analizar versículos reales, identificando lo que reconocés.</p>
+
+  <h2 class="lesson-h">Juan 1:1 — Análisis completo</h2>
+
+  <div class="verse">
+    <div class="verse-gk">Ἐν ἀρχῇ ἦν ὁ λόγος,<br>καὶ ὁ λόγος ἦν πρὸς τὸν θεόν,<br>καὶ θεὸς ἦν ὁ λόγος.</div>
+    <div class="verse-es">«En el principio era el Verbo, y el Verbo era con Dios, y el Verbo era Dios.»</div>
+    <div class="verse-ref">Juan 1:1</div>
+  </div>
+
+  <table class="gk-table">
+    <thead><tr><th>Palabra</th><th>Forma</th><th>Función</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">Ἐν</td><td class="td-dim">preposición + dat.</td><td class="td-tr">«en» (lugar o tiempo)</td></tr>
+      <tr><td class="td-gk">ἀρχῇ</td><td class="td-dim">dativo singular (1.ª decl.)</td><td class="td-tr">«principio» → «en el principio»</td></tr>
+      <tr><td class="td-gk">ἦν</td><td class="td-dim">imperfecto de εἰμί, 3.ª sg.</td><td class="td-tr">«era» — acción continua en el pasado</td></tr>
+      <tr><td class="td-gk">ὁ λόγος</td><td class="td-dim">art. + nom. sg. masc.</td><td class="td-tr">«el Verbo» — sujeto</td></tr>
+      <tr><td class="td-gk">πρὸς τὸν θεόν</td><td class="td-dim">prep. + art. + ac. sg.</td><td class="td-tr">«con Dios» / «hacia Dios» — relación íntima</td></tr>
+      <tr><td class="td-gk">θεὸς ἦν ὁ λόγος</td><td class="td-dim">pred. + vb. + suj.</td><td class="td-tr">«Dios era el Verbo» — θεός sin artículo = predicado</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Juan 3:16 — Lectura guiada</h2>
+
+  <div class="verse">
+    <div class="verse-gk">Οὕτως γὰρ ἠγάπησεν ὁ θεὸς τὸν κόσμον,<br>ὥστε τὸν υἱὸν τὸν μονογενῆ ἔδωκεν.</div>
+    <div class="verse-es">«Porque de tal manera amó Dios al mundo, que dio a su Hijo unigénito.»</div>
+    <div class="verse-ref">Juan 3:16</div>
+  </div>
+
+  <table class="gk-table">
+    <thead><tr><th>Palabra</th><th>Análisis</th></tr></thead>
+    <tbody>
+      <tr><td class="td-gk">ἠγάπησεν</td><td class="td-tr">aoristo de ἀγαπάω — «amó» (acción puntual y decisiva en el pasado)</td></tr>
+      <tr><td class="td-gk">ὁ θεὸς</td><td class="td-tr">nominativo — sujeto: «Dios»</td></tr>
+      <tr><td class="td-gk">τὸν κόσμον</td><td class="td-tr">acusativo — objeto directo: «al mundo»</td></tr>
+      <tr><td class="td-gk">τὸν υἱὸν τὸν μονογενῆ</td><td class="td-tr">acusativo + adjetivo en ac.: «al Hijo unigénito»</td></tr>
+      <tr><td class="td-gk">ἔδωκεν</td><td class="td-tr">aoristo de δίδωμι — «dio» (el regalo de la Cruz)</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="lesson-h">Filipenses 4:13 — Para memorizar</h2>
+
+  <div class="verse">
+    <div class="verse-gk">πάντα ἰσχύω ἐν τῷ ἐνδυναμοῦντί με.</div>
+    <div class="verse-es">«Todo lo puedo en Cristo que me fortalece.»</div>
+    <div class="verse-ref">Filipenses 4:13</div>
+  </div>
+
+  <p style="font-size:13px;color:var(--ivory-dim);font-style:italic">Nota: «en Cristo» no aparece en el texto griego original — el texto dice literalmente «en aquel que me fortalece». Esto es solo visible leyendo el griego.</p>
+
+  <div class="ornament">✦ · · ✦ · · ✦</div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mcl2')">← Anterior</button>
+    <button class="btn btn-gold" onclick="goTo('exam'); markDone('mcl3')">Ir al examen →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     EXAMEN FINAL
+     ============================================================ -->
+<div class="section" id="section-exam">
+  <div class="eyebrow">Evaluación Final</div>
+  <h1 class="page-title">Examen de griego koiné</h1>
+  <div class="greek-subtitle">Δοκιμασία — Introducción al griego del Nuevo Testamento</div>
+
+  <div class="card">
+    <div class="card-label">Instrucciones</div>
+    <p style="margin:0;font-size:13.5px">35 preguntas que evalúan el contenido del curso. Realizalo sin mirar las lecciones. Las respuestas pueden ser en griego o en español según se indique. No se distinguen mayúsculas en las respuestas en español, pero sí en griego.</p>
+  </div>
+
+  <div id="exam-container"></div>
+
+  <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap" id="exam-btns">
+    <button class="btn btn-gold" onclick="checkExam()">Corregir examen</button>
+    <button class="btn btn-ivory" onclick="resetExam()">Reiniciar</button>
+  </div>
+
+  <div id="exam-result" class="hidden" style="margin-top:24px"></div>
+
+  <div class="lesson-nav">
+    <button class="btn btn-ivory" onclick="goTo('mcl3')">← Volver al curso</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// =============================================
+// ESTADO
+// =============================================
+let state = {
+  current: 'm0l0',
+  completed: [],
+  sessionStart: Date.now()
+};
+
+// =============================================
+// EJERCICIOS
+// =============================================
+const exercises = {
+  'm0l1': {
+    items: [
+      { q: '¿Qué letra es Α α?', a: 'alfa' },
+      { q: '¿Qué letra es Β β?', a: 'beta' },
+      { q: '¿Qué letra es Γ γ?', a: 'gamma' },
+      { q: '¿Qué letra es Δ δ?', a: 'delta' },
+      { q: '¿Qué letra es Ε ε?', a: 'epsilon' },
+      { q: '¿Qué letra es Η η?', a: 'eta' },
+      { q: '¿Qué letra es Θ θ?', a: 'theta' },
+      { q: '¿Qué letra es Λ λ?', a: 'lambda' },
+      { q: '¿Qué letra es Ξ ξ?', a: 'xi' },
+      { q: '¿Qué letra es Σ σ/ς?', a: 'sigma' },
+      { q: '¿Qué letra es Φ φ?', a: 'phi' },
+      { q: '¿Qué letra es Ψ ψ?', a: 'psi' },
+      { q: '¿Qué letra es Ω ω?', a: 'omega' },
+    ]
+  },
+  'm0l2': {
+    items: [
+      { q: 'αι — ¿cómo suena este diptongo?', a: 'como ai en aire' },
+      { q: 'ου — ¿cómo suena este diptongo?', a: 'como u larga' },
+      { q: '¿Qué vocal es siempre breve — ε o η?', a: 'epsilon' },
+      { q: '¿Qué vocal es siempre larga — ο o ω?', a: 'omega' },
+      { q: 'La iota suscrita ᾳ ῃ ῳ — ¿se pronuncia en erasmiano?', a: 'no' },
+      { q: 'εἰρήνη — ¿qué significa esta palabra del NT?', a: 'paz' },
+    ]
+  },
+  'm0l3': {
+    items: [
+      { q: 'θεός — transliterá esta palabra', a: 'theos' },
+      { q: 'κύριος — transliterá esta palabra', a: 'kyrios' },
+      { q: 'ἀγάπη — transliterá esta palabra', a: 'agape' },
+      { q: 'πνεῦμα — transliterá esta palabra', a: 'pneuma' },
+      { q: 'λόγος — transliterá esta palabra', a: 'logos' },
+    ]
+  },
+  'mal2': {
+    items: [
+      { q: 'λόγου — ¿qué caso es?', a: 'genitivo' },
+      { q: 'λόγῳ — ¿qué caso es?', a: 'dativo' },
+      { q: 'λόγον — ¿qué caso es?', a: 'acusativo' },
+      { q: 'λόγοι — ¿qué caso y número es?', a: 'nominativo plural' },
+      { q: 'θεοῦ — ¿qué caso es?', a: 'genitivo' },
+      { q: 'κύριος — ¿qué caso es?', a: 'nominativo' },
+      { q: '¿Cuál es la terminación del acusativo singular en -ος?', a: '-ον' },
+      { q: '¿Cuál es la terminación del genitivo singular en -ος?', a: '-ου' },
+    ]
+  },
+  'mal3': {
+    items: [
+      { q: 'Artículo masculino nominativo singular:', a: 'ὁ' },
+      { q: 'Artículo masculino genitivo singular:', a: 'τοῦ' },
+      { q: 'Artículo masculino dativo singular:', a: 'τῷ' },
+      { q: 'Artículo masculino acusativo singular:', a: 'τόν' },
+      { q: 'Artículo masculino nominativo plural:', a: 'οἱ' },
+      { q: 'ὁ θεὸς — ¿qué caso?', a: 'nominativo' },
+      { q: 'τοῦ θεοῦ — ¿qué caso?', a: 'genitivo' },
+    ]
+  },
+  'mbl1': {
+    items: [
+      { q: 'εἰμί — 1.ª singular: «yo soy»', a: 'εἰμί' },
+      { q: 'εἰμί — 2.ª singular: «tú eres»', a: 'εἶ' },
+      { q: 'εἰμί — 3.ª singular: «él es»', a: 'ἐστίν' },
+      { q: 'εἰμί — 1.ª plural: «somos»', a: 'ἐσμέν' },
+      { q: 'εἰμί — 2.ª plural: «sois»', a: 'ἐστέ' },
+      { q: 'εἰμί — 3.ª plural: «son»', a: 'εἰσίν' },
+      { q: 'Ἐγώ εἰμι — ¿qué significa?', a: 'yo soy' },
+    ]
+  },
+  'mbl2': {
+    items: [
+      { q: 'λύω — 1.ª sg. (yo desato)', a: 'λύω' },
+      { q: 'λύω — 2.ª sg. (tú desatas)', a: 'λύεις' },
+      { q: 'λύω — 3.ª sg. (él desata)', a: 'λύει' },
+      { q: 'λύω — 1.ª pl. (desatamos)', a: 'λύομεν' },
+      { q: 'λύω — 3.ª pl. (desatan)', a: 'λύουσιν' },
+      { q: 'ἀκούω — 1.ª sg. (yo escucho)', a: 'ἀκούω' },
+      { q: 'πιστεύω — 1.ª pl. (creemos)', a: 'πιστεύομεν' },
+    ]
+  },
+  'mbl3': {
+    items: [
+      { q: '«No» en indicativo (negación de hechos):', a: 'οὐ' },
+      { q: '«No» en imperativo (negación de voluntad):', a: 'μή' },
+      { q: 'ἐν + ¿qué caso va?', a: 'dativo' },
+      { q: 'εἰς + ¿qué caso va?', a: 'acusativo' },
+      { q: 'ἐκ + ¿qué caso va?', a: 'genitivo' },
+      { q: 'ἐν Χριστῷ — «Χριστῷ» está en qué caso:', a: 'dativo' },
+    ]
+  }
+};
+
+// =============================================
+// EXAMEN FINAL
+// =============================================
+const examQuestions = [
+  { section: 'Alfabeto y pronunciación', q: '¿Qué letra griega se pronuncia como la «e» larga?', a: 'eta' },
+  { section: null, q: '¿Cuál es la forma final de sigma (al final de palabra)?', a: 'ς' },
+  { section: null, q: 'El espíritu áspero ἁ indica:', a: 'aspiracion' },
+  { section: null, q: 'El diptongo ου suena como:', a: 'u larga' },
+  { section: null, q: 'La letra ρ se llama:', a: 'rho' },
+  { section: 'Sustantivos y casos', q: 'El caso que funciona como sujeto de la oración es el:', a: 'nominativo' },
+  { section: null, q: 'El caso que indica posesión («de») es el:', a: 'genitivo' },
+  { section: null, q: 'El caso del objeto directo de la acción es el:', a: 'acusativo' },
+  { section: null, q: '¿Cuál es el genitivo singular de λόγος?', a: 'λόγου' },
+  { section: null, q: '¿Cuál es el acusativo singular de θεός?', a: 'θεόν' },
+  { section: null, q: '¿Cuál es el dativo singular de κύριος?', a: 'κυρίῳ' },
+  { section: null, q: '¿Cuál es el nominativo plural de λόγος?', a: 'λόγοι' },
+  { section: 'El artículo definido', q: 'Artículo masculino nominativo singular:', a: 'ὁ' },
+  { section: null, q: 'Artículo masculino genitivo singular:', a: 'τοῦ' },
+  { section: null, q: 'Artículo masculino acusativo singular:', a: 'τόν' },
+  { section: null, q: '¿Qué indica τοῦ θεοῦ?', a: 'de dios' },
+  { section: 'El verbo εἰμί', q: '«Yo soy» en griego:', a: 'εἰμί' },
+  { section: null, q: '«Él es» en griego:', a: 'ἐστίν' },
+  { section: null, q: '«Somos» en griego:', a: 'ἐσμέν' },
+  { section: null, q: '«Son» en griego:', a: 'εἰσίν' },
+  { section: null, q: 'Ὁ θεὸς ἀγάπη ἐστίν — ¿qué significa?', a: 'dios es amor' },
+  { section: 'Verbos en -ω', q: 'Desinencia de 1.ª persona singular presente activo:', a: '-ω' },
+  { section: null, q: 'Desinencia de 2.ª persona singular presente activo:', a: '-εις' },
+  { section: null, q: 'Desinencia de 3.ª persona plural presente activo:', a: '-ουσιν' },
+  { section: null, q: 'λύω — ¿qué significa?', a: 'desatar' },
+  { section: null, q: 'πιστεύω — ¿qué significa?', a: 'creer' },
+  { section: null, q: '«Escuchamos» (ἀκούω, 1.ª pl.):', a: 'ἀκούομεν' },
+  { section: 'Negación y preposiciones', q: '¿Qué partícula niega un hecho en indicativo?', a: 'οὐ' },
+  { section: null, q: '¿Qué partícula se usa con el imperativo negativo?', a: 'μή' },
+  { section: null, q: 'ἐν requiere el caso:', a: 'dativo' },
+  { section: null, q: 'εἰς requiere el caso:', a: 'acusativo' },
+  { section: 'Vocabulario del NT', q: 'θεός significa:', a: 'dios' },
+  { section: null, q: 'ἀγάπη significa:', a: 'amor' },
+  { section: null, q: 'εὐαγγέλιον significa:', a: 'evangelio' },
+  { section: null, q: 'Ἐν ἀρχῇ ἦν ὁ λόγος — ¿de qué libro del NT es este versículo?', a: 'juan' },
+];
+
+// =============================================
+// RENDER EJERCICIOS
+// =============================================
+function renderExercises() {
+  for (const [id, ex] of Object.entries(exercises)) {
+    const c = document.getElementById(`ex-${id}-container`);
+    if (!c) continue;
+    let html = '';
+    ex.items.forEach((item, i) => {
+      html += `<div class="exercise-item">
+        <span class="ex-num">${i+1}.</span>
+        <span class="ex-q">${item.q}</span>
+        <input type="text" class="ex-input" id="ex-${id}-${i}" data-answer="${item.a.toLowerCase()}" placeholder="respuesta…" autocomplete="off" spellcheck="false">
+        <span class="fb-ok" id="ok-${id}-${i}">✓</span>
+        <span class="fb-err" id="err-${id}-${i}">✗ <span id="ans-${id}-${i}"></span></span>
+      </div>`;
+    });
+    c.innerHTML = html;
+  }
+}
+
+function checkEx(id) {
+  let correct = 0;
+  exercises[id].items.forEach((item, i) => {
+    const inp = document.getElementById(`ex-${id}-${i}`);
+    const val = (inp.value || '').trim().toLowerCase();
+    const ans = item.a.toLowerCase();
+    const ok = document.getElementById(`ok-${id}-${i}`);
+    const err = document.getElementById(`err-${id}-${i}`);
+    if (val === ans || (ans.includes('/') && ans.split('/').map(s=>s.trim()).includes(val))) {
+      correct++;
+      inp.classList.add('correct'); inp.classList.remove('wrong');
+      ok.classList.add('show'); err.classList.remove('show');
+    } else {
+      inp.classList.add('wrong'); inp.classList.remove('correct');
+      err.classList.add('show'); ok.classList.remove('show');
+      document.getElementById(`ans-${id}-${i}`).textContent = item.a;
+    }
+  });
+  const total = exercises[id].items.length;
+  const pct = Math.round(correct/total*100);
+  const sc = document.getElementById(`ex-${id}-score`);
+  sc.classList.remove('hidden');
+  const c = pct>=80?'var(--green)':pct>=50?'var(--gold)':'var(--rust)';
+  sc.innerHTML = `<div class="score-box" style="color:${c}">${correct}/${total} — ${pct}%</div>
+    <p style="text-align:center;font-size:12px;color:var(--ivory-dim)">${pct>=80?'✓ Podés avanzar a la siguiente lección.':pct>=50?'◎ Repasá los errores antes de continuar.':'✗ Repasá la lección completa antes de seguir.'}</p>`;
+}
+
+function showAnswers(id) {
+  const el = document.getElementById(`ex-${id}-answers`);
+  let html = '<div class="card-label">Respuestas correctas</div>';
+  exercises[id].items.forEach((item,i) => {
+    html += `<div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)">${i+1}. ${item.q} → <span class="ans-val">${item.a}</span></div>`;
+  });
+  el.innerHTML = html; el.classList.add('show');
+}
+
+function resetEx(id) {
+  exercises[id].items.forEach((_,i) => {
+    const inp = document.getElementById(`ex-${id}-${i}`);
+    if(inp){inp.value='';inp.classList.remove('correct','wrong');}
+    document.getElementById(`ok-${id}-${i}`)?.classList.remove('show');
+    document.getElementById(`err-${id}-${i}`)?.classList.remove('show');
+  });
+  document.getElementById(`ex-${id}-score`).classList.add('hidden');
+  document.getElementById(`ex-${id}-answers`).classList.remove('show');
+}
+
+// =============================================
+// EXAMEN FINAL
+// =============================================
+function renderExam() {
+  const c = document.getElementById('exam-container');
+  if(!c) return;
+  let html = '';
+  let lastSection = '';
+  examQuestions.forEach((q,i) => {
+    if(q.section && q.section !== lastSection){
+      html += `<h2 class="lesson-h">${q.section}</h2>`;
+      lastSection = q.section;
+    }
+    html += `<div class="exercise-item">
+      <span class="ex-num">${i+1}.</span>
+      <span class="ex-q">${q.q}</span>
+      <input type="text" class="ex-input" id="exam-${i}" placeholder="respuesta…" autocomplete="off" spellcheck="false">
+      <span class="fb-ok" id="eok-${i}">✓</span>
+      <span class="fb-err" id="eerr-${i}">✗</span>
+    </div>`;
+  });
+  c.innerHTML = html;
+}
+
+function checkExam() {
+  let correct = 0;
+  const sectionScores = {};
+  let lastSection = '';
+  examQuestions.forEach((q,i) => {
+    if(q.section) lastSection = q.section;
+    if(!sectionScores[lastSection]) sectionScores[lastSection] = {c:0,t:0};
+    sectionScores[lastSection].t++;
+    const inp = document.getElementById(`exam-${i}`);
+    const val = (inp.value||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const ans = q.a.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const ok = document.getElementById(`eok-${i}`);
+    const err = document.getElementById(`eerr-${i}`);
+    if(val===ans || (q.a.includes('/')||false)&&q.a.split('/').map(s=>s.trim().toLowerCase()).includes(val)){
+      correct++;
+      sectionScores[lastSection].c++;
+      inp.classList.add('correct');inp.classList.remove('wrong');
+      ok.classList.add('show');err.classList.remove('show');
+    } else {
+      inp.classList.add('wrong');inp.classList.remove('correct');
+      err.classList.add('show');ok.classList.remove('show');
+      err.textContent = `✗ (${q.a})`;
+    }
+  });
+  const total = examQuestions.length;
+  const pct = Math.round(correct/total*100);
+  const level = pct>=85?'Aprobado — Nivel introductorio NT':pct>=60?'En progreso — seguir estudiando':'Repaso necesario';
+  const col = pct>=85?'var(--green)':pct>=60?'var(--gold)':'var(--rust)';
+  let secHtml = '<h3 class="sub-h" style="margin-top:20px">Resultado por sección</h3>';
+  for(const[sec,s] of Object.entries(sectionScores)){
+    const sp = Math.round(s.c/s.t*100);
+    const sc2 = sp>=80?'var(--green)':sp>=50?'var(--gold)':'var(--rust)';
+    secHtml += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span>${sec}</span><span style="color:${sc2};font-weight:600">${s.c}/${s.t} (${sp}%)</span></div>`;
+  }
+  const r = document.getElementById('exam-result');
+  r.classList.remove('hidden');
+  r.innerHTML = `<div class="card gold-border">
+    <div class="score-box" style="color:${col}">${correct}/${total}<br><span style="font-size:22px">${pct}%</span></div>
+    <div style="text-align:center;font-family:var(--display);font-style:italic;color:${col};font-size:15px;margin-bottom:16px">${level}</div>
+    ${secHtml}
+    <div style="margin-top:14px;font-size:12px;color:var(--ivory-dim)">${pct>=85?'✦ El texto griego del NT está mucho más cerca de lo que crees. Continúa con gramática intermedia: la primera declinación, el aoristo, y el participio.':pct>=60?'◎ Buen fundamento. Repasá los paradigmas de los casos y del verbo εἰμί.':'✗ El griego requiere paciencia. Volvé al módulo 0 y dedicá tiempo a copiar el alfabeto y los paradigmas.'}</div>
+  </div>`;
+  markDone('exam');
+  saveState();
+  r.scrollIntoView({behavior:'smooth'});
+}
+
+function resetExam() {
+  examQuestions.forEach((_,i)=>{
+    const inp = document.getElementById(`exam-${i}`);
+    if(inp){inp.value='';inp.classList.remove('correct','wrong');}
+    document.getElementById(`eok-${i}`)?.classList.remove('show');
+    const e = document.getElementById(`eerr-${i}`);
+    if(e){e.classList.remove('show');e.textContent='✗';}
+  });
+  document.getElementById('exam-result').classList.add('hidden');
+}
+
+// =============================================
+// NAVEGACIÓN
+// =============================================
+const sectionOrder = ['m0l0','m0l1','m0l2','m0l3','mal1','mal2','mal3','mbl1','mbl2','mbl3','mcl1','mcl2','mcl3','exam'];
+
+function goTo(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const sec = document.getElementById(`section-${id}`);
+  const nav = document.getElementById(`nav-${id}`);
+  if(sec) sec.classList.add('active');
+  if(nav) nav.classList.add('active');
+  state.current = id;
+  saveState();
+  window.scrollTo(0,0);
+}
+
+function markDone(id) {
+  if(!state.completed.includes(id)) state.completed.push(id);
+  document.getElementById(`nav-${id}`)?.classList.add('completed');
+  updateProgress();
+  saveState();
+}
+
+function updateProgress() {
+  const done = state.completed.length;
+  const total = sectionOrder.length;
+  const pct = Math.round(done/total*100);
+  document.getElementById('progress-bar-fill').style.width = pct+'%';
+  document.getElementById('progress-pct').textContent = `${pct}% completado`;
+}
+
+// =============================================
+// TABS
+// =============================================
+document.addEventListener('click', function(e){
+  if(!e.target.classList.contains('tab')) return;
+  const bar = e.target.closest('.tab-bar');
+  if(!bar) return;
+  bar.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+  const m = (e.target.getAttribute('onclick')||'').match(/switchTab\(this,'([^']+)'\)/);
+  if(!m) return;
+  const targetId = m[1];
+  let sib = bar.nextElementSibling;
+  while(sib && sib.classList.contains('tab-content')){
+    sib.classList.remove('active');
+    sib = sib.nextElementSibling;
+  }
+  const tgt = document.getElementById(targetId);
+  if(tgt) tgt.classList.add('active');
+});
+
+function switchTab(el, id) { /* handled by delegated listener */ }
+
+// =============================================
+// TIMER
+// =============================================
+function updateTimer(){
+  const e = Math.floor((Date.now()-state.sessionStart)/1000);
+  const m = Math.floor(e/60).toString().padStart(2,'0');
+  const s = (e%60).toString().padStart(2,'0');
+  const el = document.getElementById('timer-display');
+  if(el) el.textContent = `${m}:${s}`;
+  if(e===1800 && el){ el.style.color='var(--rust)'; }
+}
+
+// =============================================
+// EXPORT / IMPORT
+// =============================================
+function saveState(){ try{localStorage.setItem('griego_koine_state',JSON.stringify(state));}catch(e){} }
+function loadState(){
+  try{
+    const s = localStorage.getItem('griego_koine_state');
+    if(s){ const p=JSON.parse(s); state={...state,...p,sessionStart:Date.now()}; }
+  }catch(e){}
+}
+function exportProgress(){
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`griego_koine_progreso_${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+function importProgress(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const imp = JSON.parse(e.target.result);
+      state={...imp,sessionStart:Date.now()};
+      saveState(); applyState();
+      alert('✓ Progreso importado correctamente.');
+    }catch(err){alert('Error al importar el archivo.');}
+  };
+  reader.readAsText(file);
+}
+function applyState(){
+  state.completed.forEach(id => document.getElementById(`nav-${id}`)?.classList.add('completed'));
+  updateProgress();
+  goTo(state.current||'m0l0');
+}
+
+// =============================================
+// MODAL
+// =============================================
+function openHelp(){ document.getElementById('help-modal').classList.add('open'); }
+function closeHelp(){ document.getElementById('help-modal').classList.remove('open'); }
+document.getElementById('help-modal').addEventListener('click',function(e){if(e.target===this)closeHelp();});
+
+// =============================================
+// INIT
+// =============================================
+document.addEventListener('DOMContentLoaded',function(){
+  loadState();
+  renderExercises();
+  renderExam();
+  applyState();
+  setInterval(updateTimer,1000);
+  if(!localStorage.getItem('griego_koine_visited')){
+    localStorage.setItem('griego_koine_visited','1');
+    setTimeout(()=>openHelp(),600);
+  }
+});
+</script>
+</body>
+</html>
